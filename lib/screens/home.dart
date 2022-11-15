@@ -1,4 +1,7 @@
+import 'package:daily_habits/screens/challenges.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/side_menu.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -12,6 +15,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title:Text('home'),),
+      drawer: const SideMenu(),
     );
   }
 }
+
