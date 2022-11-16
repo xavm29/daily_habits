@@ -1,3 +1,4 @@
+import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
@@ -14,41 +15,88 @@ class _ChallengesState extends State<Challenges> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Challenges'),
-      ),
-      drawer: const SideMenu(),
-      body: Column(
-        children: [
-          Card(
-            child: Expanded(
-              child: ListTile(
-                  title: Expanded(child: Text('Three-line ListTile')),
-                  subtitle:
-                      Expanded(child: Text('A sufficiently long subtitle warrants three lines.')),
-                  leading: Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                      onPressed: () => {},
-                      child: const Text('Filled'),
+      backgroundColor:AppColors.primarys,
+        appBar: AppBar(
+          title: Text('Challenges'),
+        ),
+        drawer: const SideMenu(),
+        body: ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: 2,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              decoration:BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+                height: 120,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                              Text('hola')
+                            ],),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Text('hola')
+                              ],),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Theme
+                                    .of(context)
+                                    .colorScheme
+                                    .onPrimary,
+                                backgroundColor: AppColors.purplelow,
+                              ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                              onPressed: () =>
+                              {
+                              },
+                              child: const Text('Join'),
+                            ),
+                          ),
+
+                        ],
+
+                ),
                     ),
-                  ),
-                  trailing: Expanded(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: CircularPercentIndicator(
-                      radius: 60.0,
-                      lineWidth: 5.0,
-                      percent: 1.0,
-                      center: new Text("100%"),
-                      progressColor: Colors.green,
-                    ),
-                  )),
+                    radius: 50.0,
+                    lineWidth: 8.0,
+                    percent: 1.0,
+                    center: new Text("100%"),
+                    progressColor: AppColors.purplelow,
+                ),
+                  )
+
+            ],
+
+
+            )
+            ],
             ),
-          ),
-        ],
-      ),
+            );
+            },
+          separatorBuilder: (BuildContext context,
+              int index) => const Divider(),
+        )
     );
   }
 }
