@@ -12,11 +12,11 @@ class FirebaseService {
     _instance ??= FirebaseService();
     return _instance!;
   }
-  final User _user = FirebaseAuth.instance.currentUser!;
+
   User? get user => FirebaseAuth.instance.currentUser;
   final _db = FirebaseFirestore.instance;
   Stream<QuerySnapshot<Map<String, dynamic>>> get tasksStream =>
-      _db.collection('users').doc(_user.uid).collection('tasks').snapshots();
+      _db.collection('users').doc(user?.uid).collection('tasks').snapshots();
   // update name
   Future<void> updateDisplayName(String nameEntered) async {
     await FirebaseAuth.instance.currentUser?.updateDisplayName(nameEntered);

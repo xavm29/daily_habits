@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
+import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../styles/styles.dart';
 import '../utils/dialogs.dart';
@@ -42,24 +44,27 @@ class _ProfileState extends State<Profile> {
                               'https://picsum.photos/id/237/200/300'),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(FirebaseService.instance.user?.displayName ??
-                              " --- "),
-                          Text("Name"),
-                          InkWell(
-                              child: const Icon(Icons.edit),
-                              onTap: () async {
-                                String? nameEntered =
-                                    await inputDialog(context, "Your name");
-                                if (nameEntered != null) {
-                                  await FirebaseService.instance
-                                      .updateDisplayName(nameEntered);
-                                  setState ((){});
-                                }
-                              })
-                        ],
+                      Consumer<UserData>(
+                        builder: (context, userData, child) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(FirebaseService.instance.user?.displayName ??
+                                        " --- "),
+                              Text("Name"),
+                              InkWell(
+                                  child: const Icon(Icons.edit),
+                                  onTap: () async {
+                                    String? nameEntered =
+                                        await inputDialog(context, "Your name");
+                                    if (nameEntered != null) {
+                                      if (!mounted) return;
+                                      userData.setUserName(nameEntered);
+                                    }
+                                  })
+                            ],
+                          );
+                        }
                       ),
                       const SizedBox(
                         width: 20,
