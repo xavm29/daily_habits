@@ -12,7 +12,7 @@ class TextStyles {
       fontSize: 32, fontWeight: FontWeight.bold);
 
   static const TextStyle label = TextStyle(
-      fontSize: 13, color: AppColors.whites);
+      fontSize: 16, color:Colors.black);
 }
 
 class AppColors {

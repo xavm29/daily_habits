@@ -1,16 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../services/firebase_service.dart';
 import '../styles/styles.dart';
+import '../utils/dialogs.dart';
 import '../widgets/side_menu.dart';
+import 'login.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
   @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor:AppColors.primarys,
+        backgroundColor: AppColors.primarys,
         appBar: AppBar(
           title: const Text("Profile"),
         ),
@@ -35,7 +44,22 @@ class Profile extends StatelessWidget {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [Text("Marilyn Aminoff"), Text("Name")],
+                        children: [
+                          Text(FirebaseService.instance.user?.displayName ??
+                              " --- "),
+                          Text("Name"),
+                          InkWell(
+                              child: const Icon(Icons.edit),
+                              onTap: () async {
+                                String? nameEntered =
+                                    await inputDialog(context, "Your name");
+                                if (nameEntered != null) {
+                                  await FirebaseService.instance
+                                      .updateDisplayName(nameEntered);
+                                  setState ((){});
+                                }
+                              })
+                        ],
                       ),
                       const SizedBox(
                         width: 20,
@@ -191,10 +215,20 @@ class Profile extends StatelessWidget {
                 ),
               ),
             ),
-          )
-          ,ElevatedButton(onPressed:( ){}, child: Text('Log out'))
+          ),
+          ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()));
+              },
+              style: ElevatedButton.styleFrom(primary: Colors.white),
+              child: Text(
+                'Log out',
+                style: TextStyles.label,
+              ))
         ]));
   }
-
-
 }

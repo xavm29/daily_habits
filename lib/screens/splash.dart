@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../firebase_options.dart';
+
+import '../services/firebase_service.dart';
 import 'home.dart';
+import 'login.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -14,7 +13,7 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  String _status = "inicialitzant app";
+  String _status = "Inicialitzant l'app...";
 
   @override
   void initState() {
@@ -28,10 +27,13 @@ class _SplashState extends State<Splash> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const FlutterLogo(size: 148),
-            const SizedBox(height: 32),
+            const FlutterLogo(
+              size: 100,
+            ),
+            const SizedBox(
+              height: 32,
+            ),
             Text(_status),
           ],
         ),
@@ -40,35 +42,14 @@ class _SplashState extends State<Splash> {
   }
 
   void workFlow() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    setState(() {
-      _status = 'Firebase inciliatizat';
-    });
-    var user = FirebaseAuth.instance.currentUser;
+    _status = await FirebaseService.init();
+    setState(() {});
+
+    var user = FirebaseService.instance.user;
     if (user == null) {
       if (!mounted) return;
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => SignInScreen(
-                    providers: [EmailAuthProvider()],
-                    actions: [
-                      AuthStateChangeAction<SignedIn>((context, state) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Home()));
-                      }),
-                      AuthStateChangeAction<UserCreated>((context, state) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Home()));
-                      }),
-                    ],
-                  )));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
     } else {
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -76,3 +57,4 @@ class _SplashState extends State<Splash> {
     }
   }
 }
+
