@@ -16,6 +16,16 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(title:Text('home'),),
       drawer: const SideMenu(),
+      body: Column(
+
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.add_circle),
+      ),
     );
   }
 }

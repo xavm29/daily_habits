@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.daily.habits.daily_habits">
    <application
-        android:label="daily_habits"
+        android:label="Daily Habits"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

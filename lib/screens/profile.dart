@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,7 @@ import '../styles/styles.dart';
 import '../utils/dialogs.dart';
 import '../widgets/side_menu.dart';
 import 'login.dart';
+import 'dart:io';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -18,6 +20,8 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  XFile? image;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,36 +40,47 @@ class _ProfileState extends State<Profile> {
                 children: [
                   Row(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundImage: NetworkImage(
-                              'https://picsum.photos/id/237/200/300'),
-                        ),
-                      ),
-                      Consumer<UserData>(
-                        builder: (context, userData, child) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(FirebaseService.instance.user?.displayName ??
-                                        " --- "),
-                              Text("Name"),
-                              InkWell(
-                                  child: const Icon(Icons.edit),
-                                  onTap: () async {
-                                    String? nameEntered =
-                                        await inputDialog(context, "Your name");
-                                    if (nameEntered != null) {
-                                      if (!mounted) return;
-                                      userData.setUserName(nameEntered);
-                                    }
-                                  })
-                            ],
-                          );
-                        }
-                      ),
+                      Consumer<UserData>(builder: (context, userData, child) {
+                        return Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: InkWell(
+                            child: CircleAvatar(
+                              radius: 10,
+                              child: image ==null?
+                                Image.file(File(image!.path))
+                                 : FirebaseService.instance.user!.photoURL != null ?
+                                Image.network(FirebaseService.instance.user!.photoURL!,width: 50,)
+                                  : const Icon(Icons.person, size: 100)),
+                             onTap: () async {
+                              final ImagePicker picker = ImagePicker();
+                              // Pick an image
+                                  image = await picker.pickImage(
+                                  source: ImageSource.gallery);
+                                  setState(() {});
+                                  if (image != null) FirebaseService.instance.updatePhoto(image!);
+                            },
+                        ));
+                        }),
+                      Consumer<UserData>(builder: (context, userData, child) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(FirebaseService.instance.user?.displayName ??
+                                " --- "),
+                            Text("Name"),
+                            InkWell(
+                                child: const Icon(Icons.edit),
+                                onTap: () async {
+                                  String? nameEntered =
+                                  await inputDialog(context, "Your name");
+                                  if (nameEntered != null) {
+                                    if (!mounted) return;
+                                    userData.setUserName(nameEntered);
+                                  }
+                                })
+                          ],
+                        );
+                      }),
                       const SizedBox(
                         width: 20,
                       ),
@@ -234,6 +249,8 @@ class _ProfileState extends State<Profile> {
                 'Log out',
                 style: TextStyles.label,
               ))
-        ]));
+        ]
+        )
+    );
   }
 }
