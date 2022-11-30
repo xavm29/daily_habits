@@ -46,7 +46,7 @@ class _ProfileState extends State<Profile> {
                           child: InkWell(
                             child: CircleAvatar(
                               radius: 10,
-                              child: image ==null?
+                              child: image != null?
                                 Image.file(File(image!.path))
                                  : FirebaseService.instance.user!.photoURL != null ?
                                 Image.network(FirebaseService.instance.user!.photoURL!,width: 50,)
