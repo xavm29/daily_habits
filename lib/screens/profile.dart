@@ -47,11 +47,11 @@ class _ProfileState extends State<Profile> {
                           child: InkWell(
                             child: CircleAvatar(
                               radius: 10,
-                              child: image != null?
-                                Image.file(File(image!.path))
+                              backgroundImage: image != null ?
+                                FileImage(File(image!.path))
                                  : FirebaseService.instance.user!.photoURL != null ?
-                                Image.network(FirebaseService.instance.user!.photoURL!,width: 50,)
-                                  : const Icon(Icons.person, size: 100)),
+                                NetworkImage(FirebaseService.instance.user!.photoURL!,)
+                                  : const AssetImage('assets/images/icon.png') as ImageProvider),
                               onTap: () async {
                                 final ImagePicker picker = ImagePicker();
                               // Pick an image
