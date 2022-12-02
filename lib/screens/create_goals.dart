@@ -10,6 +10,10 @@ class CreateGoals extends StatefulWidget {
 class _CreateGoalsState extends State<CreateGoals> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Create Goals'),
+        ),
+        body: Column());
   }
 }

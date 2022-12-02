@@ -1,7 +1,9 @@
 import 'package:daily_habits/screens/challenges.dart';
+import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/side_menu.dart';
+import 'create_goals.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -21,9 +23,10 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: ((context) =>const CreateGoals() )));
           // Add your onPressed code here!
         },
-        backgroundColor: Colors.green,
+        backgroundColor:AppColors.primarys,
         child: const Icon(Icons.add_circle),
       ),
     );
