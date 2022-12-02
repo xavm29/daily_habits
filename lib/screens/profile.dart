@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,7 +12,6 @@ import '../styles/styles.dart';
 import '../utils/dialogs.dart';
 import '../widgets/side_menu.dart';
 import 'login.dart';
-import 'dart:io';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -51,13 +52,13 @@ class _ProfileState extends State<Profile> {
                                  : FirebaseService.instance.user!.photoURL != null ?
                                 Image.network(FirebaseService.instance.user!.photoURL!,width: 50,)
                                   : const Icon(Icons.person, size: 100)),
-                             onTap: () async {
-                              final ImagePicker picker = ImagePicker();
+                              onTap: () async {
+                                final ImagePicker picker = ImagePicker();
                               // Pick an image
                                   image = await picker.pickImage(
                                   source: ImageSource.gallery);
-                                  setState(() {});
-                                  if (image != null) FirebaseService.instance.updatePhoto(image!);
+                                  if (image != null)  FirebaseService.instance.updatePhoto(image!);
+                              setState(() {});
                             },
                         ));
                         }),
