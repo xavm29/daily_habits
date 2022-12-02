@@ -46,7 +46,7 @@ class _ProfileState extends State<Profile> {
                           padding: EdgeInsets.all(10.0),
                           child: InkWell(
                             child: CircleAvatar(
-                              radius: 10,
+                              radius: 30,
                               backgroundImage: image != null ?
                                 FileImage(File(image!.path))
                                  : FirebaseService.instance.user!.photoURL != null ?

@@ -39,7 +39,7 @@ class FirebaseService {
     var url = await taskSnapshot.ref.getDownloadURL();
     user?.updatePhotoURL(url);
     UserModel userModel = UserModel(url);
-    _db.collection('users').doc(user?.uid).update(userModel.toJson());
+    _db.collection('users').doc(user?.uid).set(userModel.toJson());
   }
 
 
