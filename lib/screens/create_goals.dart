@@ -17,41 +17,46 @@ class _CreateGoalsState extends State<CreateGoals> {
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
-          title: Text('Create Goals'),
+          title: const Text('Create Goals'),
         ),
-        body: Center(
+        body: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
+            children: [
               Container(
                   width: double.infinity,
                   height: 320,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage("assets/images/Vectorfondo.png"),
                           fit: BoxFit.fill)),
-                  child: Image.asset("assets/images/person.png")),
-              SizedBox(
-                height: 300,
-                child: Row(
-                  children: [
-                    Text("Set your Goals"),
-                  ],
-                ),
+                  child: Align(
+                    child: Image.asset("assets/images/person.png"),
+                    alignment: Alignment.bottomCenter,
+                  )),
+              Row(
+                children: const [
+                  Text("Set your Goals"),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextField(
-                      decoration: InputDecoration(
-                    labelText: 'Nº',
-                  )),
-                  TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Goal',
-                      ))
+                children: const [
+                  Flexible(
+                    child: TextField(
+                        decoration: InputDecoration(
+                            filled: true,
+                            labelText: 'Nº',
+                            fillColor: Colors.white)),
+                  ),
+                  Flexible(
+                    child: TextField(
+                        decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Goal',
+                    )),
+                  )
                 ],
               ),
               Row(
@@ -65,7 +70,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                       onPressed: () {}, child: Text("Montly"), style: style)
                 ],
               ),
-              Text("Repeat everyday "),
+              const Text("Repeat everyday "),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
