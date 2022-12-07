@@ -17,11 +17,13 @@ class _CreateGoalsState extends State<CreateGoals> {
   DateTime? endDate;
   DateTime? hourReminder;
   late TextEditingController goalTextController;
+  late TextEditingController numberTextController;
 
   @override
   void initState() {
     super.initState();
     goalTextController = TextEditingController();
+    numberTextController = TextEditingController();
   }
 
   @override
@@ -89,7 +91,10 @@ class _CreateGoalsState extends State<CreateGoals> {
                           decoration: InputDecoration(
                               filled: true,
                               labelText: 'Nº',
-                              fillColor: Colors.white)),
+                              fillColor: Colors.white),
+                          controller: numberTextController
+                      ),
+
                     ),
                     Flexible(
                       child: TextField(
@@ -220,7 +225,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                       await FirebaseService.instance.saveGoal(
                           Goal(0,
                               goalTextController.text,
-                              1,
+                              numberTextController.text,
                               "",
                               endDate!,
                               hourReminder!

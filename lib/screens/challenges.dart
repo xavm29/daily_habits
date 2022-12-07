@@ -19,7 +19,6 @@ class _ChallengesState extends State<Challenges> {
         appBar: AppBar(
           title: Text('Challenges'),
         ),
-        drawer: const SideMenu(),
         body: ListView.separated(
           padding: const EdgeInsets.all(8),
           itemCount: 2,

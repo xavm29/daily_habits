@@ -26,7 +26,7 @@ class SideMenu extends StatelessWidget {
             child: ListTile(
                 title: const Text('Profile'),
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const Profile()));
@@ -37,7 +37,7 @@ class SideMenu extends StatelessWidget {
             child: ListTile(
                 title: const Text('Chalenges'),
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const Challenges()));

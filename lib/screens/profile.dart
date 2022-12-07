@@ -30,7 +30,6 @@ class _ProfileState extends State<Profile> {
         appBar: AppBar(
           title: const Text("Profile"),
         ),
-        drawer: const SideMenu(),
         body: Column(children: [
           Padding(
             padding: const EdgeInsets.all(15.0),

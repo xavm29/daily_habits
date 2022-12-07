@@ -1,7 +1,7 @@
 class Goal{
   late int id;
   late String title;
-  late int number;
+  late String number;
   late String category;
   late DateTime endDate;
   late DateTime hourReminder;
