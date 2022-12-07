@@ -3,8 +3,8 @@ class Goal{
   late String title;
   late int number;
   late String category;
-  late String endDate;
-  late String hourReminder;
+  late DateTime endDate;
+  late DateTime hourReminder;
   Goal (this.id,this.title,this.number,this.category,this.endDate,this.hourReminder);
   Goal.fromJson(Map<String, dynamic> json) {
     title = json['title'];
@@ -12,8 +12,6 @@ class Goal{
     category= json['category'];
     endDate= json['endDate'];
     hourReminder= json['hourReminder'];
-
-
   }
   Map<String, dynamic> toJson() {
     return {

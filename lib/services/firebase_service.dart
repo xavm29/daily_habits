@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daily_habits/models/goals_model.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -57,5 +58,15 @@ class FirebaseService {
     });
     status = "Firebase inicialitzat";
     return status;
+  }
+
+
+  Future<List<Goal>> getGoals() async {
+    //TODO : Fer com al exemple de todo_list
+    return [];
+  }
+
+  Future<void> saveGoal(Goal goal) async {
+   await _db.collection('users').doc(user?.uid).collection('goals').add(goal.toJson());
   }
 }

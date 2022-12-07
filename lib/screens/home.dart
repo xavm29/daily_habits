@@ -23,7 +23,7 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushReplacement(context,MaterialPageRoute(builder: ((context) =>const CreateGoals() )));
+          Navigator.push(context,MaterialPageRoute(builder: ((context) =>const CreateGoals() )));
           // Add your onPressed code here!
         },
         backgroundColor:AppColors.primarys,

@@ -1,8 +1,8 @@
+import 'package:daily_habits/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:daily_habits/models/goals_model.dart';
 
-
+import '../models/goals_model.dart';
 import '../styles/styles.dart';
 
 class CreateGoals extends StatefulWidget {
@@ -13,14 +13,24 @@ class CreateGoals extends StatefulWidget {
 }
 
 class _CreateGoalsState extends State<CreateGoals> {
+  int? number;
+  DateTime? endDate;
+  DateTime? hourReminder;
+  late TextEditingController goalTextController;
+
+  @override
+  void initState() {
+    super.initState();
+    goalTextController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+    ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
     final ButtonStyle style2 =
-        ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
-            .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
+    ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
+        .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
     const List<Widget> Days = <Widget>[
       Text('S'),
       Text('M'),
@@ -73,7 +83,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Flexible(
                       child: TextField(
                           decoration: InputDecoration(
@@ -83,12 +93,14 @@ class _CreateGoalsState extends State<CreateGoals> {
                     ),
                     Flexible(
                       child: TextField(
-                          decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Goal',
-                      )),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                            labelText: 'Goal',
+                          ),
+                        controller: goalTextController,
+                      ),
                     )
                   ],
                 ),
@@ -134,7 +146,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                           });
                         },
                         borderRadius:
-                            const BorderRadius.all(Radius.circular(22)),
+                        const BorderRadius.all(Radius.circular(22)),
                         selectedBorderColor: Colors.black,
                         selectedColor: Colors.white,
                         //disabledColor:Colors.white,
@@ -155,53 +167,68 @@ class _CreateGoalsState extends State<CreateGoals> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
-                  elevation: 2, color:Colors.white,
+                  elevation: 2,
+                  color: Colors.white,
                   child: ListTile(
-                      onTap: () {
-                        DatePicker.showTimePicker(context,
-                            showTitleActions: true,
-                            onChanged: (hourReminder) {
-                              print('change $hourReminder');
-                            }, onConfirm: (hourReminder) {
-                          setState(() {
-
-                          });
-
-
-                              ;
-                            }, currentTime: DateTime.now(), locale: LocaleType.en);
-
-                      },
-                      title: Text('Select your time reminder'),
-                      leading: Icon(Icons.timer),
-                      trailing: Text('%hourReminder')),
+                    onTap: () {
+                      DatePicker.showTimePicker(context,
+                          showTitleActions: true,
+                          onConfirm: (hour) {
+                            setState(
+                                  () {
+                                hourReminder = hour;
+                                print(hourReminder);
+                              },
+                            );
+                          },
+                          currentTime: DateTime.now(),
+                          locale: LocaleType.en);
+                    },
+                    title: Text(hourReminder?.toString() ?? 'Select your time reminder'),
+                    leading: Icon(Icons.timer),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
-                  elevation: 2, color:Colors.white,
+                  elevation: 2,
+                  color: Colors.white,
                   child: ListTile(
-                      onTap: () {
-                        DatePicker.showDatePicker(context,
-                            showTitleActions: true,
-                            minTime: DateTime.now(),
-                            maxTime: DateTime(2028, 6, 7), onChanged: (date) {
-                              print('change $date');
-                            }, onConfirm: (date) {
-                              print('confirm $date');
-                            }, currentTime: DateTime.now(), locale: LocaleType.en);
-                      },
-                      title: Text('Select your end date'),
-                      leading: Icon(Icons.calendar_month),
-                      trailing: Text('12/05/81')),
+                    onTap: () {
+                      DatePicker.showDatePicker(context,
+                          showTitleActions: true,
+                          minTime: DateTime.now(),
+                          maxTime: DateTime(2028, 6, 7),
+                          onConfirm: (date) {
+                            print('confirm $date');
+                            endDate = date;
+                            setState(() {});
+                          },
+                          currentTime: DateTime.now(),
+                          locale: LocaleType.en);
+                    },
+                    title: Text(endDate?.toString() ?? 'Select your end date'),
+                    leading: Icon(Icons.calendar_month),
+                  ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
-                    onPressed: () {}, child: Text("Save"), style: (style2)),
+                    onPressed: () async {
+                      await FirebaseService.instance.saveGoal(
+                          Goal(0,
+                              goalTextController.text,
+                              1,
+                              "",
+                              endDate!,
+                              hourReminder!
+                          )
+                      );
+                      if (!mounted) return;
+                      Navigator.pop(context);
+                    }, child: Text("Save"), style: (style2)),
               )
             ],
           ),
