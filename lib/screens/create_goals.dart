@@ -18,43 +18,36 @@ class _CreateGoalsState extends State<CreateGoals> {
   DateTime? hourReminder;
   late TextEditingController goalTextController;
   late TextEditingController numberTextController;
-  bool daily = false;
-  bool wekly = false;
-  bool montly = false;
+  int periodic = 0;
+  final List<int> weekDays = [];
 
+  final ButtonStyle styleSelected = ElevatedButton.styleFrom(
+      textStyle: const TextStyle(fontSize: 20),
+      backgroundColor: Colors.orange);
+  final ButtonStyle styleUnselected =
+  ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+  final ButtonStyle style2 =
+  ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
+      .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
+  static const List<Widget> days = <Widget>[
+    Text('S'),
+    Text('M'),
+    Text('T'),
+    Text('W'),
+    Text('T'),
+    Text('F'),
+    Text('S'),
+  ];
   @override
   void initState() {
     super.initState();
     goalTextController = TextEditingController();
     numberTextController = TextEditingController();
-
   }
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle style =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
-    final ButtonStyle style2 =
-        ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
-            .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
-    const List<Widget> Days = <Widget>[
-      Text('S'),
-      Text('M'),
-      Text('T'),
-      Text('W'),
-      Text('T'),
-      Text('F'),
-      Text('S'),
-    ];
-    final List<bool> _selecteddays = <bool>[
-      true,
-      false,
-      false,
-      true,
-      true,
-      true,
-      true
-    ];
+
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
@@ -119,67 +112,94 @@ class _CreateGoalsState extends State<CreateGoals> {
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          if (wekly ? false : montly = false) {
-                            print(daily);
-                            setState(() {
-                              daily = true;
-                            });
-                          }
-                        },
-                        child: Text("Daily"),
-                        style: style),
-                    ElevatedButton(
-                        onPressed: () {}, child: Text("Wekly"), style: style),
-                    ElevatedButton(
-                        onPressed: () {}, child: Text("Montly"), style: style)
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const Text(
-                  "Repeat everyday ",
-                  style: TextStyles.title,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(22))),
-                      child: ToggleButtons(
-                        direction: Axis.horizontal,
-                        onPressed: (int index) {
                           setState(() {
-                            // The button that is tapped is set to true, and the others to false.
-                            for (int i = 0; i < _selecteddays.length; i++) {
-                              _selecteddays[i] = i == index;
-                            }
+                            periodic = Goal.kDaily;
                           });
                         },
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(22)),
-                        selectedBorderColor: Colors.black,
-                        selectedColor: Colors.white,
-                        //disabledColor:Colors.white,
-                        fillColor: AppColors.purplelow,
-                        color: Colors.black,
-                        constraints: const BoxConstraints(
-                          minHeight: 50.0,
-                          minWidth: 50.0,
-                        ),
-
-                        children: Days,
-                        isSelected: _selecteddays,
-                      ),
-                    )
+                        child: Text("Daily"),
+                        style: periodic == Goal.kDaily
+                            ? styleSelected
+                            : styleUnselected),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            periodic = Goal.kWeekly;
+                          });
+                        },
+                        child: Text("Weekly"),
+                        style: periodic == Goal.kWeekly
+                            ? styleSelected
+                            : styleUnselected),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            periodic = Goal.kMonthly;
+                          });
+                        },
+                        child: Text("Montly"),
+                        style: periodic == Goal.kMonthly
+                            ? styleSelected
+                            : styleUnselected)
                   ],
                 ),
               ),
+              if (periodic == Goal.kWeekly)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Text(
+                    "Repeat everyday ",
+                    style: TextStyles.title,
+                  ),
+                ),
+              if (periodic == Goal.kWeekly)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(22))),
+                        child: ToggleButtons(
+                          direction: Axis.horizontal,
+                          onPressed: (int index) {
+                            setState(() {
+                              if (weekDays.contains(index + 1)) {
+                                weekDays.remove(index + 1);
+                              } else {
+                                weekDays.add(index + 1);
+                              }
+                            });
+                          },
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(22)),
+                          selectedBorderColor: Colors.black,
+                          selectedColor: Colors.white,
+                          //disabledColor:Colors.white,
+                          fillColor: AppColors.purplelow,
+                          color: Colors.black,
+                          constraints: const BoxConstraints(
+                            minHeight: 50.0,
+                            minWidth: 50.0,
+                          ),
+                          isSelected: [
+                            weekDays.contains(1),
+                            weekDays.contains(2),
+                            weekDays.contains(3),
+                            weekDays.contains(4),
+                            weekDays.contains(5),
+                            weekDays.contains(6),
+                            weekDays.contains(7),
+                          ],
+
+                          children: days,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
@@ -233,6 +253,8 @@ class _CreateGoalsState extends State<CreateGoals> {
                           goalTextController.text,
                           numberTextController.text,
                           "",
+                          periodic,
+                          weekDays,
                           endDate!,
                           hourReminder!));
                       if (!mounted) return;
