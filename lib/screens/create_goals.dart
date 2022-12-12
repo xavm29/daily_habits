@@ -18,21 +18,25 @@ class _CreateGoalsState extends State<CreateGoals> {
   DateTime? hourReminder;
   late TextEditingController goalTextController;
   late TextEditingController numberTextController;
+  bool daily = false;
+  bool wekly = false;
+  bool montly = false;
 
   @override
   void initState() {
     super.initState();
     goalTextController = TextEditingController();
     numberTextController = TextEditingController();
+
   }
 
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style =
-    ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
     final ButtonStyle style2 =
-    ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
-        .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
+        ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
+            .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
     const List<Widget> Days = <Widget>[
       Text('S'),
       Text('M'),
@@ -92,18 +96,16 @@ class _CreateGoalsState extends State<CreateGoals> {
                               filled: true,
                               labelText: 'Nº',
                               fillColor: Colors.white),
-                          controller: numberTextController
-                      ),
-
+                          controller: numberTextController),
                     ),
                     Flexible(
                       child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            filled: true,
-                            fillColor: Colors.white,
-                            labelText: 'Goal',
-                          ),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelText: 'Goal',
+                        ),
                         controller: goalTextController,
                       ),
                     )
@@ -116,7 +118,16 @@ class _CreateGoalsState extends State<CreateGoals> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ElevatedButton(
-                        onPressed: () {}, child: Text("Daily"), style: style),
+                        onPressed: () {
+                          if (wekly ? false : montly = false) {
+                            print(daily);
+                            setState(() {
+                              daily = true;
+                            });
+                          }
+                        },
+                        child: Text("Daily"),
+                        style: style),
                     ElevatedButton(
                         onPressed: () {}, child: Text("Wekly"), style: style),
                     ElevatedButton(
@@ -151,7 +162,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                           });
                         },
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(22)),
+                            const BorderRadius.all(Radius.circular(22)),
                         selectedBorderColor: Colors.black,
                         selectedColor: Colors.white,
                         //disabledColor:Colors.white,
@@ -176,20 +187,18 @@ class _CreateGoalsState extends State<CreateGoals> {
                   color: Colors.white,
                   child: ListTile(
                     onTap: () {
-                      DatePicker.showTimePicker(context,
-                          showTitleActions: true,
+                      DatePicker.showTimePicker(context, showTitleActions: true,
                           onConfirm: (hour) {
-                            setState(
-                                  () {
-                                hourReminder = hour;
-                                print(hourReminder);
-                              },
-                            );
+                        setState(
+                          () {
+                            hourReminder = hour;
+                            print(hourReminder);
                           },
-                          currentTime: DateTime.now(),
-                          locale: LocaleType.en);
+                        );
+                      }, currentTime: DateTime.now(), locale: LocaleType.en);
                     },
-                    title: Text(hourReminder?.toString() ?? 'Select your time reminder'),
+                    title: Text(hourReminder?.toString() ??
+                        'Select your time reminder'),
                     leading: Icon(Icons.timer),
                   ),
                 ),
@@ -204,14 +213,11 @@ class _CreateGoalsState extends State<CreateGoals> {
                       DatePicker.showDatePicker(context,
                           showTitleActions: true,
                           minTime: DateTime.now(),
-                          maxTime: DateTime(2028, 6, 7),
-                          onConfirm: (date) {
-                            print('confirm $date');
-                            endDate = date;
-                            setState(() {});
-                          },
-                          currentTime: DateTime.now(),
-                          locale: LocaleType.en);
+                          maxTime: DateTime(2028, 6, 7), onConfirm: (date) {
+                        print('confirm $date');
+                        endDate = date;
+                        setState(() {});
+                      }, currentTime: DateTime.now(), locale: LocaleType.en);
                     },
                     title: Text(endDate?.toString() ?? 'Select your end date'),
                     leading: Icon(Icons.calendar_month),
@@ -222,18 +228,18 @@ class _CreateGoalsState extends State<CreateGoals> {
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: () async {
-                      await FirebaseService.instance.saveGoal(
-                          Goal(0,
-                              goalTextController.text,
-                              numberTextController.text,
-                              "",
-                              endDate!,
-                              hourReminder!
-                          )
-                      );
+                      await FirebaseService.instance.saveGoal(Goal(
+                          0,
+                          goalTextController.text,
+                          numberTextController.text,
+                          "",
+                          endDate!,
+                          hourReminder!));
                       if (!mounted) return;
                       Navigator.pop(context);
-                    }, child: Text("Save"), style: (style2)),
+                    },
+                    child: Text("Save"),
+                    style: (style2)),
               )
             ],
           ),
