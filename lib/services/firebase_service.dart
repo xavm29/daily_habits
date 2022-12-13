@@ -24,8 +24,8 @@ class FirebaseService {
 
 
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> get tasksStream =>
-      _db.collection('users').doc(user?.uid).collection('tasks').snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> get goalsStream =>
+      _db.collection('users').doc(user?.uid).collection('goals').snapshots();
 
   // update name
   Future<void> updateDisplayName(String nameEntered) async {
@@ -68,5 +68,8 @@ class FirebaseService {
 
   Future<void> saveGoal(Goal goal) async {
    await _db.collection('users').doc(user?.uid).collection('goals').add(goal.toJson());
+  }
+  Future<void> updateGoal(String id, Goal goal) async {
+    await _db.collection('users').doc(user?.uid).collection('goals').doc(id).update(goal.toJson());
   }
 }

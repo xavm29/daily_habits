@@ -20,13 +20,14 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    var stream = FirebaseService.instance.tasksStream;
+    var stream = FirebaseService.instance.goalsStream;
 
     stream.listen((event) {
       goals.clear();
       for (var doc in event.docs) {
-        var task = Goal.fromJson(doc.data());
-        goals[doc.id] = task;
+        var goal = Goal.fromJson(doc.data());
+        goal.id = doc.id;
+        goals[doc.id] = goal;
       }
       setState(() {});
     });
@@ -50,18 +51,22 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(8.0),
             child: Text("To be done", style: TextStyles.bigText),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-                child: ListTile(
-              title: Text("hola"),
-              leading: FlutterLogo(),
-              trailing: Checkbox(
-                value: true,
-                onChanged: (bool? value) {},
-              ),
-            )),
-          )
+          for (var key in goals.keys)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                  child: ListTile(
+                title: Text(goals[key]!.title),
+                leading: FlutterLogo(),
+                trailing: Checkbox(
+                  value: goals[key]!.completed,
+                  onChanged: (bool? value) {
+                    if (value != null) goals[key]!.completed = value;
+                    FirebaseService.instance.updateGoal(key, goals[key]!);
+                  },
+                ),
+              )),
+            )
         ],
       ),
       floatingActionButton: FloatingActionButton(

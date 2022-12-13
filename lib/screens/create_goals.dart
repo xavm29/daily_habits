@@ -249,9 +249,9 @@ class _CreateGoalsState extends State<CreateGoals> {
                 child: ElevatedButton(
                     onPressed: () async {
                       await FirebaseService.instance.saveGoal(Goal(
-                          0,
                           goalTextController.text,
-                          numberTextController.text,
+                          false,
+                          int.tryParse(numberTextController.text) ?? 1,
                           "",
                           periodic,
                           weekDays,
