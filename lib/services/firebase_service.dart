@@ -62,7 +62,7 @@ class FirebaseService {
 
 
   Future<List<Goal>> getGoals() async {
-    //TODO : Fer com al exemple de todo_list
+    await _db.collection('users').doc(user?.uid).collection('goals').get();
     return [];
   }
 

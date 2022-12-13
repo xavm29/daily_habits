@@ -22,6 +22,7 @@ class Goal{
 
   Goal (this.id,this.title,this.number,this.category,this.periodic,this.weekDays,this.endDate,this.hourReminder);
   Goal.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     title = json['title'];
     number= json['completed'];
     category= json['category'];
