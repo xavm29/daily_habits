@@ -8,7 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../firebase_options.dart';
-import '../models/completed_task.dart';
+import '../models/completed_goal.dart';
 import '../models/user_data.dart';
 
 class FirebaseService {
@@ -73,7 +73,7 @@ class FirebaseService {
   Future<void> updateGoal(String id, Goal goal) async {
     await _db.collection('users').doc(user?.uid).collection('goals').doc(id).update(goal.toJson());
   }
-  Future<void> saveCompletedTask(CompletedTask task) async {
-    await _db.collection('users').doc(user?.uid).collection('tasks').add(task.toJson());
+  Future<void> saveCompletedGoals(CompletedTask task) async {
+    await _db.collection('users').doc(user?.uid).collection('compltedGoals').add(task.toJson());
   }
 }

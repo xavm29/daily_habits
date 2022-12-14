@@ -1,4 +1,4 @@
-import 'package:daily_habits/models/completed_task.dart';
+import 'package:daily_habits/models/completed_goal.dart';
 import 'package:daily_habits/models/goals_model.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
                   onChanged: (bool? value) {
                     if (goals[key]!.completed) goals[key]!.lastCompleted;
                     FirebaseService.instance.updateGoal(key, goals[key]!);
-                    FirebaseService.instance.saveCompletedTask(CompletedTask(key, DateTime.now()));
+                    FirebaseService.instance.saveCompletedGoals(CompletedTask(key, DateTime.now()));
                   },
                 ),
               )),

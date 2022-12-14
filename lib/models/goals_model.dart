@@ -34,7 +34,7 @@ class Goal{
     weekDays= json['weekDays']?.cast<int>() ?? <int>[];
     endDate= (json['endDate'] as Timestamp).toDate();
     hourReminder= (json['hourReminder'] as Timestamp).toDate();
-    lastCompleted= (json['lastCompleted'] as Timestamp?)?.toDate();
+    lastCompleted= (json['lastCompleted'] as Timestamp).toDate();
   }
 
   bool isCompletedForDate(DateTime dateTime){
