@@ -22,6 +22,7 @@ class Goal{
   late List<int> weekDays;
   late DateTime endDate;
   late DateTime hourReminder;
+  late DateTime? lastCompleted;
 
   Goal (this.title,this.completed,this.number,this.category,this.periodic,this.weekDays,this.endDate,this.hourReminder);
   Goal.fromJson(Map<String, dynamic> json) {
@@ -33,7 +34,13 @@ class Goal{
     weekDays= json['weekDays']?.cast<int>() ?? <int>[];
     endDate= (json['endDate'] as Timestamp).toDate();
     hourReminder= (json['hourReminder'] as Timestamp).toDate();
+    lastCompleted= (json['lastCompleted'] as Timestamp?)?.toDate();
   }
+
+  bool isCompletedForDate(DateTime dateTime){
+    return completed;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -43,7 +50,8 @@ class Goal{
       'periodic': periodic,
       'weekDays': weekDays,
       'endDate': endDate,
-      'hourReminder': hourReminder
+      'hourReminder': hourReminder,
+      'lastCompleted': lastCompleted
     };
   }
 }
