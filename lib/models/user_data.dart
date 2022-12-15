@@ -8,7 +8,7 @@ class UserData extends ChangeNotifier {
   String userName = "";
   String userPhotoUrl = "";
   List<Goal> goals = [];
-  List<CompletedTask> task = [];
+  List<CompletedTask> tasks = [];
 
   setUserName(String userName) async {
     await FirebaseService.instance.updateDisplayName(userName);

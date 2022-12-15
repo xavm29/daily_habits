@@ -20,16 +20,15 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   var goals = <String, Goal>{};
   late UserData userData;
+  late DateTime dateSelected;
 
   @override
   void initState() {
     super.initState();
+    var now = DateTime.now();
+    dateSelected = DateTime.parse("${now.year}-${now.month}-${now.day}");
     var stream = FirebaseService.instance.goalsStream;
-    userData = Provider.of<UserData>(context);
-    FirebaseService.instance.getCompletedTasks().then((value) {
-      userData.task = value;
-      setState(() {});
-    });
+    userData = Provider.of<UserData>(context, listen: false);
 
     stream.listen((event) {
       goals.clear();
@@ -52,32 +51,37 @@ class _HomeState extends State<Home> {
       body: Column(
         children: [
           HorizontalCalendar(
-              date: DateTime.now().add(const Duration(days: 2)),
-              onDateSelected: (date) => print(
-                    date.toString(),
-                  )),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+              date: dateSelected,
+              onDateSelected: (var date) {
+                dateSelected = DateTime.parse(date);
+                setState(() {});
+                print(date.toString());
+              }),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text("To be done", style: TextStyles.bigText),
           ),
           for (var key in goals.keys)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                  child: ListTile(
-                title: Text(goals[key]!.title),
-                leading: FlutterLogo(),
-                trailing: Checkbox(
-                  value: goals[key]!.completed,
-                  onChanged: (bool? value) {
-                    if (goals[key]!.completed) goals[key]!.lastCompleted;
-                    FirebaseService.instance.updateGoal(key, goals[key]!);
-                    FirebaseService.instance
-                        .saveCompletedGoals(CompletedTask(key, DateTime.now()));
-                  },
-                ),
-              )),
-            )
+            if (!goals[key]!.isCompletedForDate(dateSelected, userData) &&
+                !goals[key]!.isVisible(dateSelected))
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                    child: ListTile(
+                  title: Text(goals[key]!.title),
+                  leading: FlutterLogo(),
+                  trailing: Checkbox(
+                    value:
+                        goals[key]!.isCompletedForDate(dateSelected, userData),
+                    onChanged: (bool? value) async {
+                      var task = CompletedTask(key, dateSelected);
+                      userData.tasks.add(task);
+                      await FirebaseService.instance.saveCompletedGoals(task);
+                      setState(() {});
+                    },
+                  ),
+                )),
+              )
         ],
       ),
       floatingActionButton: FloatingActionButton(

@@ -22,13 +22,12 @@ class _CreateGoalsState extends State<CreateGoals> {
   final List<int> weekDays = [];
 
   final ButtonStyle styleSelected = ElevatedButton.styleFrom(
-      textStyle: const TextStyle(fontSize: 20),
-      backgroundColor: Colors.orange);
+      textStyle: const TextStyle(fontSize: 20), backgroundColor: Colors.orange);
   final ButtonStyle styleUnselected =
-  ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+      ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
   final ButtonStyle style2 =
-  ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
-      .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
+      ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
+          .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
   static const List<Widget> days = <Widget>[
     Text('S'),
     Text('M'),
@@ -47,7 +46,6 @@ class _CreateGoalsState extends State<CreateGoals> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
@@ -158,7 +156,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(22))),
@@ -219,7 +217,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                     },
                     title: Text(hourReminder?.toString() ??
                         'Select your time reminder'),
-                    leading: Icon(Icons.timer),
+                    leading: const Icon(Icons.timer),
                   ),
                 ),
               ),
@@ -240,7 +238,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                       }, currentTime: DateTime.now(), locale: LocaleType.en);
                     },
                     title: Text(endDate?.toString() ?? 'Select your end date'),
-                    leading: Icon(Icons.calendar_month),
+                    leading: const Icon(Icons.calendar_month),
                   ),
                 ),
               ),
@@ -250,7 +248,6 @@ class _CreateGoalsState extends State<CreateGoals> {
                     onPressed: () async {
                       await FirebaseService.instance.saveGoal(Goal(
                           goalTextController.text,
-                          false,
                           int.tryParse(numberTextController.text) ?? 1,
                           "",
                           periodic,

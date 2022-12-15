@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-
+import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import 'home.dart';
 import 'login.dart';
@@ -52,9 +53,14 @@ class _SplashState extends State<Splash> {
           MaterialPageRoute(builder: (context) => const LoginScreen()));
     } else {
       if (!mounted) return;
+      var userData = Provider.of<UserData>(context, listen: false);
+      FirebaseService.instance.getCompletedTasks().then((value) {
+        userData.tasks = value;
+      });
+
+      if (!mounted) return;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const Home()));
     }
   }
 }
-

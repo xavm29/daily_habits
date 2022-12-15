@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'user_data.dart';
+
 class Goal {
   static const kDaily = 1;
   static const kWeekly = 2;
@@ -15,7 +17,6 @@ class Goal {
 
   late String id;
   late String title;
-  late bool completed;
   late int number;
   late String category;
   late int periodic;
@@ -24,11 +25,11 @@ class Goal {
   late DateTime hourReminder;
   DateTime? lastCompleted;
 
-  Goal(this.title, this.completed, this.number, this.category, this.periodic,
-      this.weekDays, this.endDate, this.hourReminder);
+  Goal(this.title, this.number, this.category, this.periodic, this.weekDays,
+      this.endDate, this.hourReminder);
+
   Goal.fromJson(Map<String, dynamic> json) {
     title = json['title'] ?? "Goal---";
-    completed = json['completed'] ?? false;
     number = json['number'] ?? 1;
     category = json['category'] ?? "";
     periodic = json['periodic'] ?? kDaily;
@@ -40,19 +41,39 @@ class Goal {
         : null;
   }
 
-  bool isCompletedForDate(DateTime dateTime) {
-    //TODO: check lastCompleted
-    // if (daily && lastcompleted <
-     if (periodic ==1 &&lastCompleted => dateTime.now ){
+  bool isVisible(DateTime dateTime) {
+    if (dateTime.isAfter(endDate)) return false;
+    if (periodic == Goal.kWeekly && !weekDays.contains(dateTime.weekday)) {
+      return false;
+    }
+    return true;
+  }
 
-     }
+  bool isCompletedForDate(DateTime dateTime, UserData userData) {
+    bool completed = false;
+    for (var task in userData.tasks) {
+      if (task.goalId == id) {
+        Duration difference = task.completedDateTime.difference(dateTime);
+        int days = difference.inDays.abs();
+        if (periodic == Goal.kDaily && days < 1) {
+          completed = true;
+        }
+        if (periodic == Goal.kWeekly &&
+            days < 7 &&
+            weekDays.contains(task.completedDateTime.weekday)) {
+          completed = true;
+        }
+        if (periodic == Goal.kMonthly && days < 30) {
+          completed = true;
+        }
+      }
+    }
     return completed;
   }
 
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'completed': completed,
       'number': number,
       'category': category,
       'periodic': periodic,
@@ -61,10 +82,5 @@ class Goal {
       'hourReminder': hourReminder,
       'lastCompleted': lastCompleted
     };
-  }
-
-  void completedGoal() {
-    var saveCompletedGoals;
-    (completed = true) ?? saveCompletedGoals;
   }
 }
