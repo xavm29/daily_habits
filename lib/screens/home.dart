@@ -3,7 +3,9 @@ import 'package:daily_habits/models/goals_model.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:horizontal_calendar/horizontal_calendar.dart';
+import 'package:provider/provider.dart';
 
+import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../widgets/side_menu.dart';
 import 'create_goals.dart';
@@ -17,11 +19,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var goals = <String, Goal>{};
+  late UserData userData;
 
   @override
   void initState() {
     super.initState();
     var stream = FirebaseService.instance.goalsStream;
+    userData = Provider.of<UserData>(context);
+    FirebaseService.instance.getCompletedTasks().then((value) {
+      userData.task = value;
+      setState(() {});
+    });
 
     stream.listen((event) {
       goals.clear();
@@ -55,7 +63,8 @@ class _HomeState extends State<Home> {
           for (var key in goals.keys)
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Card(child: ListTile(
+              child: Card(
+                  child: ListTile(
                 title: Text(goals[key]!.title),
                 leading: FlutterLogo(),
                 trailing: Checkbox(

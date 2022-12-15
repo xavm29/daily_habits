@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Goal{
+class Goal {
   static const kDaily = 1;
   static const kWeekly = 2;
   static const kMonthly = 3;
@@ -22,22 +22,27 @@ class Goal{
   late List<int> weekDays;
   late DateTime endDate;
   late DateTime hourReminder;
-  late DateTime lastCompleted;
+  DateTime? lastCompleted;
 
-  Goal (this.title,this.completed,this.number,this.category,this.periodic,this.weekDays,this.endDate,this.hourReminder);
+  Goal(this.title, this.completed, this.number, this.category, this.periodic,
+      this.weekDays, this.endDate, this.hourReminder);
   Goal.fromJson(Map<String, dynamic> json) {
     title = json['title'] ?? "Goal---";
     completed = json['completed'] ?? false;
-    number= json['number'] ?? 1;
-    category= json['category'] ?? "";
-    periodic= json['periodic'] ?? kDaily;
-    weekDays= json['weekDays']?.cast<int>() ?? <int>[];
-    endDate= (json['endDate'] as Timestamp).toDate();
-    hourReminder= (json['hourReminder'] as Timestamp).toDate();
-    lastCompleted= (json['lastCompleted'] as Timestamp).toDate();
+    number = json['number'] ?? 1;
+    category = json['category'] ?? "";
+    periodic = json['periodic'] ?? kDaily;
+    weekDays = json['weekDays']?.cast<int>() ?? <int>[];
+    endDate = (json['endDate'] as Timestamp).toDate();
+    hourReminder = (json['hourReminder'] as Timestamp).toDate();
+    lastCompleted = (json['lastCompleted'] != null)
+        ? (json['lastCompleted'] as Timestamp).toDate()
+        : null;
   }
 
-  bool isCompletedForDate(DateTime dateTime){
+  bool isCompletedForDate(DateTime dateTime) {
+    //TODO: check lastCompleted
+    // if (daily && lastcompleted <
     return completed;
   }
 
@@ -54,9 +59,9 @@ class Goal{
       'lastCompleted': lastCompleted
     };
   }
-  void completedGoal (){
+
+  void completedGoal() {
     var saveCompletedGoals;
     (completed = true) ?? saveCompletedGoals;
-
   }
 }

@@ -23,8 +23,6 @@ class FirebaseService {
   final _db = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
 
-
-
   Stream<QuerySnapshot<Map<String, dynamic>>> get goalsStream =>
       _db.collection('users').doc(user?.uid).collection('goals').snapshots();
 
@@ -44,8 +42,6 @@ class FirebaseService {
     _db.collection('users').doc(user?.uid).set(userModel.toJson());
   }
 
-
-
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
   }
@@ -61,19 +57,48 @@ class FirebaseService {
     return status;
   }
 
-
   Future<List<Goal>> getGoals() async {
     await _db.collection('users').doc(user?.uid).collection('goals').get();
     return [];
   }
 
+  Future<List<CompletedTask>> getCompletedTasks() async {
+    List<CompletedTask> completedTasks = [];
+    QuerySnapshot<Map<String, dynamic>> data = await _db
+        .collection('users')
+        .doc(user?.uid)
+        .collection('completedGoals')
+        .get();
+    if (data.docs.isNotEmpty) {
+      for (var element in data.docs) {
+        completedTasks.add(CompletedTask.fromJson(element.data()));
+      }
+    }
+    return completedTasks;
+  }
+
   Future<void> saveGoal(Goal goal) async {
-   await _db.collection('users').doc(user?.uid).collection('goals').add(goal.toJson());
+    await _db
+        .collection('users')
+        .doc(user?.uid)
+        .collection('goals')
+        .add(goal.toJson());
   }
+
   Future<void> updateGoal(String id, Goal goal) async {
-    await _db.collection('users').doc(user?.uid).collection('goals').doc(id).update(goal.toJson());
+    await _db
+        .collection('users')
+        .doc(user?.uid)
+        .collection('goals')
+        .doc(id)
+        .update(goal.toJson());
   }
+
   Future<void> saveCompletedGoals(CompletedTask task) async {
-    await _db.collection('users').doc(user?.uid).collection('completedGoals').add(task.toJson());
+    await _db
+        .collection('users')
+        .doc(user?.uid)
+        .collection('completedGoals')
+        .add(task.toJson());
   }
 }
