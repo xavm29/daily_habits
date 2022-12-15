@@ -2,8 +2,6 @@ import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-import '../widgets/side_menu.dart';
-
 class Challenges extends StatefulWidget {
   const Challenges({Key? key}) : super(key: key);
 
@@ -12,13 +10,12 @@ class Challenges extends StatefulWidget {
 }
 
 class _ChallengesState extends State<Challenges> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
-          title: Text('Challenges'),
+          title: const Text('Challenges'),
         ),
         body: ListView.separated(
           padding: const EdgeInsets.all(8),
@@ -74,7 +71,7 @@ class _ChallengesState extends State<Challenges> {
                           radius: 50.0,
                           lineWidth: 8.0,
                           percent: 1.0,
-                          center: new Text("100%"),
+                          center: const Text("100%"),
                           progressColor: AppColors.purplelow,
                         ),
                       )

@@ -29,12 +29,12 @@ class _CreateGoalsState extends State<CreateGoals> {
       ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
           .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
   static const List<Widget> days = <Widget>[
-    Text('S'),
     Text('M'),
     Text('T'),
     Text('W'),
     Text('T'),
     Text('F'),
+    Text('S'),
     Text('S'),
   ];
   @override
@@ -59,11 +59,12 @@ class _CreateGoalsState extends State<CreateGoals> {
                   height: 320,
                   decoration: const BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage("assets/images/Vectorfondo.png"),
+                          image:
+                              AssetImage("assets/images/vector-background.png"),
                           fit: BoxFit.fill)),
                   child: Align(
-                    child: Image.asset("assets/images/person.png"),
                     alignment: Alignment.bottomCenter,
+                    child: Image.asset("assets/images/person.png"),
                   )),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -83,7 +84,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                   children: [
                     Flexible(
                       child: TextField(
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               filled: true,
                               labelText: 'Nº',
                               fillColor: Colors.white),
@@ -114,7 +115,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                             periodic = Goal.kDaily;
                           });
                         },
-                        child: Text("Daily"),
+                        child: const Text("Daily"),
                         style: periodic == Goal.kDaily
                             ? styleSelected
                             : styleUnselected),
@@ -124,7 +125,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                             periodic = Goal.kWeekly;
                           });
                         },
-                        child: Text("Weekly"),
+                        child: const Text("Weekly"),
                         style: periodic == Goal.kWeekly
                             ? styleSelected
                             : styleUnselected),
@@ -134,7 +135,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                             periodic = Goal.kMonthly;
                           });
                         },
-                        child: Text("Montly"),
+                        child: const Text("Montly"),
                         style: periodic == Goal.kMonthly
                             ? styleSelected
                             : styleUnselected)
@@ -142,9 +143,9 @@ class _CreateGoalsState extends State<CreateGoals> {
                 ),
               ),
               if (periodic == Goal.kWeekly)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Text(
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
                     "Repeat everyday ",
                     style: TextStyles.title,
                   ),
@@ -210,6 +211,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         setState(
                           () {
                             hourReminder = hour;
+
                             print(hourReminder);
                           },
                         );
@@ -257,8 +259,8 @@ class _CreateGoalsState extends State<CreateGoals> {
                       if (!mounted) return;
                       Navigator.pop(context);
                     },
-                    child: Text("Save"),
-                    style: (style2)),
+                    style: (style2),
+                    child: const Text("Save")),
               )
             ],
           ),
