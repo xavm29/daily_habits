@@ -74,6 +74,6 @@ class FirebaseService {
     await _db.collection('users').doc(user?.uid).collection('goals').doc(id).update(goal.toJson());
   }
   Future<void> saveCompletedGoals(CompletedTask task) async {
-    await _db.collection('users').doc(user?.uid).collection('compltedGoals').add(task.toJson());
+    await _db.collection('users').doc(user?.uid).collection('completedGoals').add(task.toJson());
   }
 }

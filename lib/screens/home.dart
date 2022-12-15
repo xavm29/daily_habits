@@ -55,8 +55,7 @@ class _HomeState extends State<Home> {
           for (var key in goals.keys)
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Card(
-                  child: ListTile(
+              child: Card(child: ListTile(
                 title: Text(goals[key]!.title),
                 leading: FlutterLogo(),
                 trailing: Checkbox(
@@ -64,7 +63,8 @@ class _HomeState extends State<Home> {
                   onChanged: (bool? value) {
                     if (goals[key]!.completed) goals[key]!.lastCompleted;
                     FirebaseService.instance.updateGoal(key, goals[key]!);
-                    FirebaseService.instance.saveCompletedGoals(CompletedTask(key, DateTime.now()));
+                    FirebaseService.instance
+                        .saveCompletedGoals(CompletedTask(key, DateTime.now()));
                   },
                 ),
               )),

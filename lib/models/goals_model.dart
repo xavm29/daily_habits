@@ -22,7 +22,7 @@ class Goal{
   late List<int> weekDays;
   late DateTime endDate;
   late DateTime hourReminder;
-  late DateTime? lastCompleted;
+  late DateTime lastCompleted;
 
   Goal (this.title,this.completed,this.number,this.category,this.periodic,this.weekDays,this.endDate,this.hourReminder);
   Goal.fromJson(Map<String, dynamic> json) {
@@ -53,5 +53,10 @@ class Goal{
       'hourReminder': hourReminder,
       'lastCompleted': lastCompleted
     };
+  }
+  void completedGoal (){
+    var saveCompletedGoals;
+    (completed = true) ?? saveCompletedGoals;
+
   }
 }
