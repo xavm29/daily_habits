@@ -43,6 +43,9 @@ class Goal {
   bool isCompletedForDate(DateTime dateTime) {
     //TODO: check lastCompleted
     // if (daily && lastcompleted <
+     if (periodic ==1 &&lastCompleted => dateTime.now ){
+
+     }
     return completed;
   }
 
