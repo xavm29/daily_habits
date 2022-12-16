@@ -17,7 +17,7 @@ class Goal {
 
   late String id;
   late String title;
-  late int number;
+
   late String category;
   late int periodic;
   late List<int> weekDays;
@@ -25,12 +25,11 @@ class Goal {
   late DateTime hourReminder;
   DateTime? lastCompleted;
 
-  Goal(this.title, this.number, this.category, this.periodic, this.weekDays,
-      this.endDate, this.hourReminder);
+  Goal(this.title, this.category, this.periodic, this.weekDays, this.endDate,
+      this.hourReminder);
 
   Goal.fromJson(Map<String, dynamic> json) {
     title = json['title'] ?? "Goal---";
-    number = json['number'] ?? 1;
     category = json['category'] ?? "";
     periodic = json['periodic'] ?? kDaily;
     weekDays = json['weekDays']?.cast<int>() ?? <int>[];
@@ -74,7 +73,6 @@ class Goal {
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'number': number,
       'category': category,
       'periodic': periodic,
       'weekDays': weekDays,

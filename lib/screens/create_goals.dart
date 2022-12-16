@@ -26,9 +26,7 @@ class _CreateGoalsState extends State<CreateGoals> {
       textStyle: const TextStyle(fontSize: 20), backgroundColor: Colors.orange);
   final ButtonStyle styleUnselected =
       ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
-  final ButtonStyle style2 =
-      ElevatedButton.styleFrom(primary: Colors.white, onPrimary: Colors.black)
-          .copyWith(elevation: ButtonStyleButton.allOrNull(2.0));
+
   static const List<Widget> days = <Widget>[
     Text('M'),
     Text('T'),
@@ -84,14 +82,6 @@ class _CreateGoalsState extends State<CreateGoals> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Flexible(
-                      child: TextField(
-                          decoration: const InputDecoration(
-                              filled: true,
-                              labelText: 'Nº',
-                              fillColor: Colors.white),
-                          controller: numberTextController),
-                    ),
                     Flexible(
                       child: TextField(
                         decoration: const InputDecoration(
@@ -251,11 +241,11 @@ class _CreateGoalsState extends State<CreateGoals> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
+                    icon: Icon(Icons.save),
                     onPressed: () async {
                       await FirebaseService.instance.saveGoal(Goal(
                           goalTextController.text,
-                          int.tryParse(numberTextController.text) ?? 1,
                           "",
                           periodic,
                           weekDays,
@@ -264,8 +254,12 @@ class _CreateGoalsState extends State<CreateGoals> {
                       if (!mounted) return;
                       Navigator.pop(context);
                     },
-                    style: (style2),
-                    child: const Text("Save")),
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(160, 50),
+                        shape: const StadiumBorder(),
+                        primary: Colors.white,
+                        onPrimary: Colors.black),
+                    label: const Text("Save")),
               )
             ],
           ),
