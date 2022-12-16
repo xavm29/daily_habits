@@ -1,6 +1,7 @@
 import 'package:daily_habits/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../models/goals_model.dart';
 import '../styles/styles.dart';
@@ -37,6 +38,7 @@ class _CreateGoalsState extends State<CreateGoals> {
     Text('S'),
     Text('S'),
   ];
+
   @override
   void initState() {
     super.initState();
@@ -205,6 +207,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                   elevation: 2,
                   color: Colors.white,
                   child: ListTile(
+                    leading: const Icon(Icons.timer),
                     onTap: () {
                       DatePicker.showTimePicker(context, showTitleActions: true,
                           onConfirm: (hour) {
@@ -215,11 +218,11 @@ class _CreateGoalsState extends State<CreateGoals> {
                             print(hourReminder);
                           },
                         );
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      }, currentTime: DateTime.now());
                     },
-                    title: Text(hourReminder?.toString() ??
-                        'Select your time reminder'),
-                    leading: const Icon(Icons.timer),
+                    title: (hourReminder != null)
+                        ? Text(DateFormat('kk:mm').format(hourReminder!))
+                        : const Text('Select your time reminder'),
                   ),
                 ),
               ),
@@ -237,9 +240,11 @@ class _CreateGoalsState extends State<CreateGoals> {
                         endDate = date;
                         print(endDate);
                         setState(() {});
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      }, currentTime: DateTime.now(), locale: LocaleType.es);
                     },
-                    title: Text(endDate?.toString() ?? 'Select your end date'),
+                    title: (endDate != null)
+                        ? Text(DateFormat('yyyy-MM-dd').format(endDate!))
+                        : const Text('Select your end date'),
                     leading: const Icon(Icons.calendar_month),
                   ),
                 ),
