@@ -115,30 +115,30 @@ class _CreateGoalsState extends State<CreateGoals> {
                             periodic = Goal.kDaily;
                           });
                         },
-                        child: const Text("Daily"),
                         style: periodic == Goal.kDaily
                             ? styleSelected
-                            : styleUnselected),
+                            : styleUnselected,
+                        child: const Text("Daily")),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
                             periodic = Goal.kWeekly;
                           });
                         },
-                        child: const Text("Weekly"),
                         style: periodic == Goal.kWeekly
                             ? styleSelected
-                            : styleUnselected),
+                            : styleUnselected,
+                        child: const Text("Weekly")),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
                             periodic = Goal.kMonthly;
                           });
                         },
-                        child: const Text("Montly"),
                         style: periodic == Goal.kMonthly
                             ? styleSelected
-                            : styleUnselected)
+                            : styleUnselected,
+                        child: const Text("Montly"))
                   ],
                 ),
               ),
@@ -234,8 +234,8 @@ class _CreateGoalsState extends State<CreateGoals> {
                           showTitleActions: true,
                           minTime: DateTime.now(),
                           maxTime: DateTime(2028, 6, 7), onConfirm: (date) {
-                        print('confirm $date');
                         endDate = date;
+                        print(endDate);
                         setState(() {});
                       }, currentTime: DateTime.now(), locale: LocaleType.en);
                     },
