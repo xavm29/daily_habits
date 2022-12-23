@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/user_data.dart';
 import '../services/firebase_service.dart';
+import '../styles/styles.dart';
 import 'home.dart';
 import 'login.dart';
 
@@ -25,17 +26,18 @@ class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primarys,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const FlutterLogo(
-              size: 100,
-            ),
+            Image.asset("assets/images/icon.png"),
             const SizedBox(
               height: 32,
             ),
-            Text(_status),
+            const CircularProgressIndicator(
+              color: Colors.black,
+            )
           ],
         ),
       ),
