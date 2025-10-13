@@ -2,7 +2,7 @@ import 'package:daily_habits/models/completed_goal.dart';
 import 'package:daily_habits/models/goals_model.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:horizontal_calendar/horizontal_calendar.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 
 import '../models/user_data.dart';
@@ -21,12 +21,15 @@ class _HomeState extends State<Home> {
   var goals = <String, Goal>{};
   late UserData userData;
   late DateTime dateSelected;
+  late DateTime focusedDay;
+  CalendarFormat calendarFormat = CalendarFormat.week;
 
   @override
   void initState() {
     super.initState();
     var now = DateTime.now();
-    dateSelected = DateTime.parse("${now.year}-${now.month}-${now.day}");
+    dateSelected = DateTime(now.year, now.month, now.day);
+    focusedDay = dateSelected;
     var stream = FirebaseService.instance.goalsStream;
     userData = Provider.of<UserData>(context, listen: false);
 
@@ -45,43 +48,74 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('home'),
+        title: const Text('Home'),
       ),
       drawer: const SideMenu(),
       body: Column(
         children: [
-          HorizontalCalendar(
-              date: dateSelected,
-              onDateSelected: (var date) {
-                dateSelected = DateTime.parse(date);
-                setState(() {});
-                print(date.toString());
-              }),
+          TableCalendar(
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: focusedDay,
+            selectedDayPredicate: (day) => isSameDay(dateSelected, day),
+            calendarFormat: calendarFormat,
+            onDaySelected: (selectedDay, focused) {
+              setState(() {
+                dateSelected = selectedDay;
+                focusedDay = focused;
+              });
+            },
+            onFormatChanged: (format) {
+              setState(() {
+                calendarFormat = format;
+              });
+            },
+            onPageChanged: (focused) {
+              focusedDay = focused;
+            },
+            calendarStyle: CalendarStyle(
+              selectedDecoration: const BoxDecoration(
+                color: AppColors.primarys,
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: BoxDecoration(
+                color: AppColors.primarys.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text("To be done", style: TextStyles.bigText),
           ),
-          for (var key in goals.keys)
-            if (!goals[key]!.isCompletedForDate(dateSelected, userData) &&
-                !goals[key]!.isVisible(dateSelected))
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                    child: ListTile(
-                  title: Text(goals[key]!.title),
-                  leading: FlutterLogo(),
-                  trailing: Checkbox(
-                    value:
-                        goals[key]!.isCompletedForDate(dateSelected, userData),
-                    onChanged: (bool? value) async {
-                      var task = CompletedTask(key, dateSelected);
-                      userData.tasks.add(task);
-                      await FirebaseService.instance.saveCompletedGoals(task);
-                      setState(() {});
-                    },
-                  ),
-                )),
-              )
+          Expanded(
+            child: ListView(
+              children: [
+                for (var key in goals.keys)
+                  if (!goals[key]!.isCompletedForDate(dateSelected, userData) &&
+                      goals[key]!.isVisible(dateSelected))
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                          child: ListTile(
+                        title: Text(goals[key]!.title),
+                        leading: const Icon(Icons.flag),
+                        trailing: Checkbox(
+                          value: goals[key]!
+                              .isCompletedForDate(dateSelected, userData),
+                          onChanged: (bool? value) async {
+                            var task = CompletedTask(key, dateSelected);
+                            userData.tasks.add(task);
+                            await FirebaseService.instance
+                                .saveCompletedGoals(task);
+                            setState(() {});
+                          },
+                        ),
+                      )),
+                    )
+              ],
+            ),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(

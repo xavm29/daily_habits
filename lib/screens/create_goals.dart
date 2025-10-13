@@ -1,6 +1,5 @@
 import 'package:daily_habits/services/firebase_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../models/goals_model.dart';
@@ -66,10 +65,10 @@ class _CreateGoalsState extends State<CreateGoals> {
                     alignment: Alignment.bottomCenter,
                     child: Image.asset("assets/images/person.png"),
                   )),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Row(
-                  children: const [
+                  children: [
                     Text(
                       "Set your Goals",
                       style: TextStyles.title,
@@ -138,7 +137,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "Repeat everyday ",
+                    "Repeat every day ",
                     style: TextStyles.title,
                   ),
                 ),
@@ -198,20 +197,26 @@ class _CreateGoalsState extends State<CreateGoals> {
                   color: Colors.white,
                   child: ListTile(
                     leading: const Icon(Icons.timer),
-                    onTap: () {
-                      DatePicker.showTimePicker(context, showTitleActions: true,
-                          onConfirm: (hour) {
-                        setState(
-                          () {
-                            hourReminder = hour;
-
-                            print(hourReminder);
-                          },
-                        );
-                      }, currentTime: DateTime.now());
+                    onTap: () async {
+                      final TimeOfDay? time = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+                      if (time != null) {
+                        setState(() {
+                          final now = DateTime.now();
+                          hourReminder = DateTime(
+                            now.year,
+                            now.month,
+                            now.day,
+                            time.hour,
+                            time.minute,
+                          );
+                        });
+                      }
                     },
                     title: (hourReminder != null)
-                        ? Text(DateFormat('kk:mm').format(hourReminder!))
+                        ? Text(DateFormat('HH:mm').format(hourReminder!))
                         : const Text('Select your time reminder'),
                   ),
                 ),
@@ -222,15 +227,19 @@ class _CreateGoalsState extends State<CreateGoals> {
                   elevation: 2,
                   color: Colors.white,
                   child: ListTile(
-                    onTap: () {
-                      DatePicker.showDatePicker(context,
-                          showTitleActions: true,
-                          minTime: DateTime.now(),
-                          maxTime: DateTime(2028, 6, 7), onConfirm: (date) {
-                        endDate = date;
-                        print(endDate);
-                        setState(() {});
-                      }, currentTime: DateTime.now(), locale: LocaleType.es);
+                    onTap: () async {
+                      final DateTime? date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2030, 12, 31),
+                        locale: const Locale('es', 'ES'),
+                      );
+                      if (date != null) {
+                        setState(() {
+                          endDate = date;
+                        });
+                      }
                     },
                     title: (endDate != null)
                         ? Text(DateFormat('yyyy-MM-dd').format(endDate!))
@@ -242,8 +251,26 @@ class _CreateGoalsState extends State<CreateGoals> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton.icon(
-                    icon: Icon(Icons.save),
+                    icon: const Icon(Icons.save),
                     onPressed: () async {
+                      if (goalTextController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please enter a goal')),
+                        );
+                        return;
+                      }
+                      if (endDate == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please select an end date')),
+                        );
+                        return;
+                      }
+                      if (hourReminder == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please select a reminder time')),
+                        );
+                        return;
+                      }
                       await FirebaseService.instance.saveGoal(Goal(
                           goalTextController.text,
                           "",
@@ -257,8 +284,8 @@ class _CreateGoalsState extends State<CreateGoals> {
                     style: ElevatedButton.styleFrom(
                         fixedSize: const Size(160, 50),
                         shape: const StadiumBorder(),
-                        primary: Colors.white,
-                        onPrimary: Colors.black),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black),
                     label: const Text("Save")),
               )
             ], // prueba de deveolop

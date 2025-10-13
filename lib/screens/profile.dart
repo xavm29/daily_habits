@@ -10,7 +10,6 @@ import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../styles/styles.dart';
 import '../utils/dialogs.dart';
-import '../widgets/side_menu.dart';
 import 'login.dart';
 
 class Profile extends StatefulWidget {
@@ -42,34 +41,37 @@ class _ProfileState extends State<Profile> {
                     children: [
                       Consumer<UserData>(builder: (context, userData, child) {
                         return Padding(
-                          padding: EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(10.0),
                           child: InkWell(
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: image != null ?
-                                FileImage(File(image!.path))
-                                 : FirebaseService.instance.user!.photoURL != null ?
-                                NetworkImage(FirebaseService.instance.user!.photoURL!,)
-                                  : const AssetImage('assets/images/icon.png') as ImageProvider),
-                              onTap: () async {
-                                final ImagePicker picker = ImagePicker();
+                            onTap: () async {
+                              final ImagePicker picker = ImagePicker();
                               // Pick an image
-                                  image = await picker.pickImage(
+                              image = await picker.pickImage(
                                   source: ImageSource.gallery);
-                                  if (image != null)  FirebaseService.instance.updatePhoto(image!);
+                              if (image != null) {
+                                FirebaseService.instance.updatePhoto(image!);
+                              }
                               setState(() {});
                             },
-                        ));
-                        }),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: image != null
+                                  ? FileImage(File(image!.path))
+                                  : FirebaseService.instance.user!.photoURL != null
+                                      ? NetworkImage(FirebaseService.instance.user!.photoURL!)
+                                      : const AssetImage('assets/images/icon.png') as ImageProvider,
+                            ),
+                          ),
+                        );
+                      }),
                       Consumer<UserData>(builder: (context, userData, child) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(FirebaseService.instance.user?.displayName ??
                                 " --- "),
-                            Text("Name"),
+                            const Text("Name"),
                             InkWell(
-                                child: const Icon(Icons.edit),
                                 onTap: () async {
                                   String? nameEntered =
                                   await inputDialog(context, "Your name");
@@ -77,7 +79,8 @@ class _ProfileState extends State<Profile> {
                                     if (!mounted) return;
                                     userData.setUserName(nameEntered);
                                   }
-                                })
+                                },
+                                child: const Icon(Icons.edit))
                           ],
                         );
                       }),
@@ -124,12 +127,12 @@ class _ProfileState extends State<Profile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
-                              Text("Total hours"),
-                              Text("18", style: TextStyle(fontSize: 18)),
+                              Text("Completed"),
+                              Text("12", style: TextStyle(fontSize: 18)),
                             ],
                           ),
                         ),
-                        const Expanded(flex: 1, child: Icon(Icons.access_time)),
+                        const Expanded(flex: 1, child: Icon(Icons.check_circle)),
                       ],
                     ),
                   ),
@@ -204,29 +207,29 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.only(top: 15.0, bottom: 15),
                 child: Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                       flex: 1,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.access_time),
                         ],
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text("Total hours"),
+                        children: [
+                          Text("Current streak"),
                         ],
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       flex: 1,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text("20 days"),
                         ],
                       ),
@@ -244,8 +247,8 @@ class _ProfileState extends State<Profile> {
                     MaterialPageRoute(
                         builder: (context) => const LoginScreen()));
               },
-              style: ElevatedButton.styleFrom(primary: Colors.white),
-              child: Text(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              child: const Text(
                 'Log out',
                 style: TextStyles.label,
               ))

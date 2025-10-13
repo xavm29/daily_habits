@@ -48,12 +48,14 @@ class FirebaseService {
 
   static Future<String> init() async {
     String status = "";
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ).catchError((error) {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      status = "Firebase inicialitzat";
+    } catch (error) {
       status = "Error: ${error.toString()}";
-    });
-    status = "Firebase inicialitzat";
+    }
     return status;
   }
 
