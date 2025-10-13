@@ -4,6 +4,8 @@ import 'package:daily_habits/screens/statistics.dart';
 import 'package:daily_habits/screens/friends.dart';
 import 'package:daily_habits/screens/leaderboard.dart';
 import 'package:daily_habits/screens/rewards.dart';
+import 'package:daily_habits/screens/reminder_settings.dart';
+import 'package:daily_habits/screens/settings_screen.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -120,6 +122,34 @@ class SideMenu extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const RewardsScreen()),
+                );
+              },
+            ),
+          ),
+          Card(
+            elevation: 2,
+            child: ListTile(
+              leading: const Icon(Icons.notifications_active, color: AppColors.primarys),
+              title: const Text('Reminders'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ReminderSettingsScreen()),
+                );
+              },
+            ),
+          ),
+          Card(
+            elevation: 2,
+            child: ListTile(
+              leading: const Icon(Icons.settings, color: AppColors.primarys),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
                 );
               },
             ),

@@ -25,8 +25,16 @@ class Reward {
     title = json['title'] ?? '';
     description = json['description'] ?? '';
     cost = json['cost'] ?? 0;
-    icon = IconData(json['iconCodePoint'] ?? Icons.card_giftcard.codePoint, fontFamily: 'MaterialIcons');
-    color = Color(json['colorValue'] ?? Colors.blue.value);
+    final codePoint = json['iconCodePoint'] ?? Icons.card_giftcard.codePoint;
+    icon = const IconData(0xe22e, fontFamily: 'MaterialIcons'); // Default icon
+    if (codePoint is int) {
+      icon = IconData(codePoint, fontFamily: 'MaterialIcons');
+    }
+    final colorVal = json['colorValue'] ?? Colors.blue.value;
+    color = Colors.blue;
+    if (colorVal is int) {
+      color = Color(colorVal);
+    }
     isRedeemed = json['isRedeemed'] ?? false;
     redeemedAt = json['redeemedAt'] != null
         ? (json['redeemedAt'] as Timestamp).toDate()
