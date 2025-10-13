@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
+import '../services/analytics_service.dart';
 import '../styles/styles.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -79,6 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   value: themeProvider.isDarkMode,
                   onChanged: (value) {
                     themeProvider.toggleTheme();
+                    AnalyticsService.instance.logChangeTheme(isDarkMode: value);
                   },
                   activeColor: AppColors.primarys,
                 ),

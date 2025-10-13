@@ -1,5 +1,6 @@
 import 'package:daily_habits/models/reward_model.dart';
 import 'package:daily_habits/services/reward_service.dart';
+import 'package:daily_habits/services/analytics_service.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -372,6 +373,13 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
               Navigator.pop(context);
               final success = await RewardService.instance.redeemReward(reward);
               if (success && mounted) {
+                // Track reward redemption
+                await AnalyticsService.instance.logRedeemReward(
+                  rewardId: reward.id,
+                  rewardTitle: reward.title,
+                  cost: reward.cost,
+                );
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('🎉 ${reward.title} redeemed! Enjoy!'),

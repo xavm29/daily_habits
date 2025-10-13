@@ -8,6 +8,8 @@ import '../models/user_data.dart';
 import '../models/goals_model.dart';
 import '../models/completed_goal.dart';
 import '../services/firebase_service.dart';
+import '../services/analytics_service.dart';
+import '../services/crashlytics_service.dart';
 import 'home.dart';
 
 class LoginCustomScreen extends StatefulWidget {
@@ -38,6 +40,19 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
       final userCredential = await GoogleAuthService.instance.signInWithGoogle();
 
       if (userCredential != null) {
+        // Track analytics
+        try {
+          await AnalyticsService.instance.logLogin(method: 'google');
+          await AnalyticsService.instance.setUserId(userCredential.user!.uid);
+          await CrashlyticsService.instance.setUserId(userCredential.user!.uid);
+          await CrashlyticsService.instance.setUserProperties(
+            email: userCredential.user!.email,
+            userId: userCredential.user!.uid,
+          );
+        } catch (e, stackTrace) {
+          await CrashlyticsService.instance.recordAuthError(e, stackTrace);
+        }
+
         // Check if user had local data and sync it
         if (await LocalStorageService.instance.hasLocalData()) {
           await _syncLocalDataToFirebase();
@@ -56,7 +71,8 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
           MaterialPageRoute(builder: (context) => const Home()),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await CrashlyticsService.instance.recordAuthError(e, stackTrace);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error signing in: $e')),
@@ -74,18 +90,43 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
     setState(() => _isLoading = true);
 
     try {
+      UserCredential userCredential;
       if (_isSignUp) {
         // Sign up
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+        // Track sign up
+        try {
+          await AnalyticsService.instance.logSignUp(method: 'email');
+          await AnalyticsService.instance.setUserId(userCredential.user!.uid);
+          await CrashlyticsService.instance.setUserId(userCredential.user!.uid);
+          await CrashlyticsService.instance.setUserProperties(
+            email: userCredential.user!.email,
+            userId: userCredential.user!.uid,
+          );
+        } catch (e, stackTrace) {
+          await CrashlyticsService.instance.recordAuthError(e, stackTrace);
+        }
       } else {
         // Sign in
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+        // Track login
+        try {
+          await AnalyticsService.instance.logLogin(method: 'email');
+          await AnalyticsService.instance.setUserId(userCredential.user!.uid);
+          await CrashlyticsService.instance.setUserId(userCredential.user!.uid);
+          await CrashlyticsService.instance.setUserProperties(
+            email: userCredential.user!.email,
+            userId: userCredential.user!.uid,
+          );
+        } catch (e, stackTrace) {
+          await CrashlyticsService.instance.recordAuthError(e, stackTrace);
+        }
       }
 
       // Check if user had local data and sync it
@@ -105,7 +146,8 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
         context,
         MaterialPageRoute(builder: (context) => const Home()),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await CrashlyticsService.instance.recordAuthError(e, stackTrace);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -138,12 +180,23 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
 
       // Clear local data after successful sync
       await LocalStorageService.instance.clearLocalData();
-    } catch (e) {
+
+      // Track successful sync
+      await AnalyticsService.instance.logSyncData(success: true);
+    } catch (e, stackTrace) {
+      await CrashlyticsService.instance.recordSyncError(e, stackTrace);
+      await AnalyticsService.instance.logSyncData(success: false, error: e.toString());
       print('Error syncing local data: $e');
     }
   }
 
   void _handleSkip() {
+    // Track that user skipped registration
+    AnalyticsService.instance.logCustomEvent(
+      eventName: 'skip_registration',
+      parameters: {'from_screen': 'login'},
+    );
+
     // User wants to use the app without registration
     Navigator.pushReplacement(
       context,

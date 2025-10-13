@@ -9,9 +9,10 @@ import 'package:provider/provider.dart';
 import '../models/user_data.dart';
 import '../providers/theme_provider.dart';
 import '../services/firebase_service.dart';
+import '../services/analytics_service.dart';
 import '../styles/styles.dart';
 import '../utils/dialogs.dart';
-import 'login.dart';
+import 'login_custom.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -266,12 +267,20 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
+              onPressed: () async {
+                // Track logout
+                await AnalyticsService.instance.logLogout();
+
+                // Sign out from Firebase
+                await FirebaseAuth.instance.signOut();
+
+                if (!mounted) return;
+
+                // Navigate to login screen
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
+                        builder: (context) => const LoginCustomScreen()));
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
               child: const Text(

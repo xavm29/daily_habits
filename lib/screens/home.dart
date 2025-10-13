@@ -7,6 +7,7 @@ import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_data.dart';
 import '../services/firebase_service.dart';
@@ -14,6 +15,8 @@ import '../services/notification_service.dart';
 import '../services/reward_service.dart';
 import '../services/local_storage_service.dart';
 import '../services/review_service.dart';
+import '../services/analytics_service.dart';
+import '../services/crashlytics_service.dart';
 import '../widgets/side_menu.dart';
 import '../widgets/quantitative_dialog.dart';
 import '../widgets/registration_prompt_dialog.dart';
@@ -100,6 +103,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       // Add coins to user
       await RewardService.instance.addCoins(coinsEarned, reason: 'Completed: ${goals[key]!.title}');
 
+      // Track analytics
+      try {
+        await AnalyticsService.instance.logCompleteTask(
+          goalId: key,
+          goalTitle: goals[key]!.title,
+          streak: currentStreak,
+          isPerfectDay: isPerfectDay,
+        );
+        await AnalyticsService.instance.logEarnCoins(
+          amount: coinsEarned,
+          reason: 'Completed: ${goals[key]!.title}',
+        );
+      } catch (e, stackTrace) {
+        await CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Failed to track task completion analytics');
+      }
+
       // Show success message with coins
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -139,6 +158,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
           // Add coins to user
           await RewardService.instance.addCoins(coinsEarned, reason: 'Completed: ${goals[key]!.title}');
+
+          // Track analytics
+          try {
+            await AnalyticsService.instance.logCompleteTask(
+              goalId: key,
+              goalTitle: goals[key]!.title,
+              streak: currentStreak,
+              isPerfectDay: isPerfectDay,
+            );
+            await AnalyticsService.instance.logEarnCoins(
+              amount: coinsEarned,
+              reason: 'Completed: ${goals[key]!.title}',
+            );
+          } catch (e, stackTrace) {
+            await CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Failed to track quantitative task analytics');
+          }
 
           // Show success message with achieved value and coins
           ScaffoldMessenger.of(context).showSnackBar(
@@ -226,6 +261,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     final shouldPrompt = await LocalStorageService.instance.shouldPromptForRegistration();
 
     if (shouldPrompt && mounted) {
+      // Track that we're showing the prompt
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final usageCount = prefs.getInt('usage_count') ?? 0;
+        await AnalyticsService.instance.logShowRegistrationPrompt(usageCount: usageCount);
+      } catch (e, stackTrace) {
+        await CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Failed to track registration prompt');
+      }
+
       // Wait a bit before showing the dialog
       await Future.delayed(const Duration(seconds: 2));
 
@@ -235,7 +279,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         context: context,
         barrierDismissible: false,
         builder: (context) => RegistrationPromptDialog(
-          onRegister: () {
+          onRegister: () async {
+            await AnalyticsService.instance.logAcceptRegistrationPrompt();
             Navigator.pop(context);
             // Navigate to login screen
             Navigator.push(
@@ -243,7 +288,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               MaterialPageRoute(builder: (context) => const LoginCustomScreen()),
             );
           },
-          onLater: () {
+          onLater: () async {
+            await AnalyticsService.instance.logDismissRegistrationPrompt();
             Navigator.pop(context);
           },
         ),
@@ -258,6 +304,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
 
     if (shouldRequest && mounted) {
+      // Track that we're requesting review
+      await AnalyticsService.instance.logRequestReview();
+
       // Wait a bit before showing the dialog
       await Future.delayed(const Duration(seconds: 3));
 
@@ -270,6 +319,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             Navigator.pop(context);
             await ReviewService.instance.requestReview();
             await ReviewService.instance.markReviewAsCompleted();
+            await AnalyticsService.instance.logRateApp(rating: 5); // Assuming they'll rate positively
           },
           onLater: () {
             Navigator.pop(context);

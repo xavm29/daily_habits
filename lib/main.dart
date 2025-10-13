@@ -3,12 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'models/user_data.dart';
 import 'providers/theme_provider.dart';
 import 'screens/splash.dart';
+import 'services/crashlytics_service.dart';
+import 'services/analytics_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize Crashlytics
+  await CrashlyticsService.instance.initialize();
+
+  // Analytics is initialized automatically with FirebaseAnalytics.instance
+
   runApp(const MyApp());
 }
 
@@ -25,6 +38,9 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
+            navigatorObservers: [
+              AnalyticsService.instance.observer,
+            ],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate
