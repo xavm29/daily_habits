@@ -1,4 +1,5 @@
 import 'package:daily_habits/screens/profile.dart';
+import 'package:daily_habits/screens/statistics.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -14,34 +15,68 @@ class SideMenu extends StatelessWidget {
     return Drawer(
       child: Column(
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
+          DrawerHeader(
+            decoration: const BoxDecoration(
               color: AppColors.purplelow,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            child: Center(child: Text('1 Day')),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.calendar_today, size: 48, color: Colors.white),
+                SizedBox(height: 8),
+                Text(
+                  'Daily Habits',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
           Card(
             elevation: 2,
             child: ListTile(
-                title: const Text('Profile'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Profile()));
-                }),
+              leading: const Icon(Icons.bar_chart, color: AppColors.primarys),
+              title: const Text('Statistics'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Statistics()),
+                );
+              },
+            ),
           ),
           Card(
             elevation: 2,
             child: ListTile(
-                title: const Text('Chalenges'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Challenges()));
-                }),
+              leading: const Icon(Icons.emoji_events, color: AppColors.primarys),
+              title: const Text('Challenges'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Challenges()),
+                );
+              },
+            ),
+          ),
+          Card(
+            elevation: 2,
+            child: ListTile(
+              leading: const Icon(Icons.person, color: AppColors.primarys),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Profile()),
+                );
+              },
+            ),
           ),
         ],
       ),

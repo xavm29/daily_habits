@@ -1,5 +1,7 @@
 import 'package:daily_habits/services/firebase_service.dart';
+import 'package:daily_habits/services/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import '../models/goals_model.dart';
@@ -271,14 +273,40 @@ class _CreateGoalsState extends State<CreateGoals> {
                         );
                         return;
                       }
-                      await FirebaseService.instance.saveGoal(Goal(
+                      final goal = Goal(
                           goalTextController.text,
                           "",
                           periodic,
                           weekDays,
                           endDate!,
-                          hourReminder!));
+                          hourReminder!);
+
+                      await FirebaseService.instance.saveGoal(goal);
+
+                      // Schedule notification for this goal
+                      final notificationService = NotificationService();
+                      await notificationService.scheduleDailyNotification(
+                        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                        title: 'Reminder: ${goal.title}',
+                        body: 'Don\'t forget to complete your habit today!',
+                        time: Time(
+                          hourReminder!.hour,
+                          hourReminder!.minute,
+                          0,
+                        ),
+                        payload: goalTextController.text,
+                      );
+
                       if (!mounted) return;
+
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Goal created with reminder! 🎯'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
