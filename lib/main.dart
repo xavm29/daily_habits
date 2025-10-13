@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'models/user_data.dart';
+import 'providers/theme_provider.dart';
 import 'screens/splash.dart';
 
 void main() {
@@ -16,19 +17,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => UserData(),
-      child: MaterialApp(
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate
-        ],
-        supportedLocales: const [Locale('en'), Locale('es')],
-        title: 'Flutter Demo',
-        theme: ThemeData(
-            colorSchemeSeed: AppColors.primarys,
-            textTheme: GoogleFonts.rubikTextTheme()),
-        home: const Splash(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserData()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            supportedLocales: const [Locale('en'), Locale('es')],
+            title: 'Daily Habits',
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const Splash(),
+          );
+        },
       ),
     );
   }

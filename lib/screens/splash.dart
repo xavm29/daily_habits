@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../models/user_data.dart';
 import '../services/firebase_service.dart';
+import '../services/local_storage_service.dart';
 import '../styles/styles.dart';
 import 'home.dart';
-import 'login.dart';
+import 'login_custom.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -45,14 +46,36 @@ class _SplashState extends State<Splash> {
   }
 
   void workFlow() async {
+    // Initialize local storage
+    await LocalStorageService.instance.initialize();
+
     _status = await FirebaseService.init();
     setState(() {});
 
     var user = FirebaseService.instance.user;
     if (user == null) {
+      // Check if user has local data
+      final hasLocalData = await LocalStorageService.instance.hasLocalData();
+
       if (!mounted) return;
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
+
+      if (hasLocalData) {
+        // User has been using the app without registration, go to home
+        var userData = Provider.of<UserData>(context, listen: false);
+        final localTasks = LocalStorageService.instance.getLocalCompletedTasks();
+        userData.tasks = localTasks;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+      } else {
+        // New user, show login screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginCustomScreen()),
+        );
+      }
     } else {
       if (!mounted) return;
       var userData = Provider.of<UserData>(context, listen: false);

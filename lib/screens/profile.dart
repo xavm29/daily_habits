@@ -7,6 +7,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../models/user_data.dart';
+import '../providers/theme_provider.dart';
 import '../services/firebase_service.dart';
 import '../styles/styles.dart';
 import '../utils/dialogs.dart';
@@ -236,6 +237,31 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15, bottom: 10),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) {
+                  return SwitchListTile(
+                    title: const Text('Dark Mode'),
+                    subtitle: const Text('Switch between light and dark theme'),
+                    secondary: Icon(
+                      themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                      color: AppColors.primarys,
+                    ),
+                    value: themeProvider.isDarkMode,
+                    onChanged: (value) {
+                      themeProvider.toggleTheme();
+                    },
+                    activeColor: AppColors.primarys,
+                  );
+                },
               ),
             ),
           ),

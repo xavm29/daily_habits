@@ -11,9 +11,15 @@ import 'package:provider/provider.dart';
 import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
+import '../services/reward_service.dart';
+import '../services/local_storage_service.dart';
+import '../services/review_service.dart';
 import '../widgets/side_menu.dart';
 import '../widgets/quantitative_dialog.dart';
+import '../widgets/registration_prompt_dialog.dart';
+import '../widgets/review_prompt_dialog.dart';
 import 'create_goals.dart';
+import 'login_custom.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -61,6 +67,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
       setState(() {});
     });
+
+    // Check for registration prompt
+    _checkRegistrationPrompt();
+
+    // Check for review prompt
+    _checkReviewPrompt();
   }
 
   @override
@@ -80,19 +92,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         _animationController.reverse();
       });
 
-      // Show success message
+      // Calculate coins earned
+      int currentStreak = _getCurrentStreak();
+      bool isPerfectDay = _isPerfectDay();
+      int coinsEarned = RewardService.instance.calculateCoinsForTask(isPerfectDay, currentStreak);
+
+      // Add coins to user
+      await RewardService.instance.addCoins(coinsEarned, reason: 'Completed: ${goals[key]!.title}');
+
+      // Show success message with coins
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Great job! Keep it up! 🎉'),
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Text('Great job! +$coinsEarned coins 🎉'),
             ],
           ),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -112,14 +132,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           // Play confetti animation
           _confettiController.play();
 
-          // Show success message with achieved value
+          // Calculate coins earned
+          int currentStreak = _getCurrentStreak();
+          bool isPerfectDay = _isPerfectDay();
+          int coinsEarned = RewardService.instance.calculateCoinsForTask(isPerfectDay, currentStreak);
+
+          // Add coins to user
+          await RewardService.instance.addCoins(coinsEarned, reason: 'Completed: ${goals[key]!.title}');
+
+          // Show success message with achieved value and coins
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('Completed: $value ${goals[key]!.unit ?? ""}! 🎉'),
+                  Text('Completed: $value ${goals[key]!.unit ?? ""}! +$coinsEarned coins 🎉'),
                 ],
               ),
               backgroundColor: Colors.green,
@@ -141,6 +169,118 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         },
       ),
     );
+  }
+
+  int _getCurrentStreak() {
+    if (userData.tasks.isEmpty) return 0;
+
+    int streak = 0;
+    DateTime checkDate = DateTime.now();
+
+    while (true) {
+      bool hasTaskForDay = userData.tasks.any((task) {
+        DateTime taskDate = DateTime(
+          task.completedDateTime.year,
+          task.completedDateTime.month,
+          task.completedDateTime.day,
+        );
+        DateTime compareDate = DateTime(
+          checkDate.year,
+          checkDate.month,
+          checkDate.day,
+        );
+        return taskDate == compareDate;
+      });
+
+      if (!hasTaskForDay) break;
+      streak++;
+      checkDate = checkDate.subtract(const Duration(days: 1));
+    }
+
+    return streak;
+  }
+
+  bool _isPerfectDay() {
+    if (goals.isEmpty) return false;
+
+    int totalGoalsForToday = 0;
+    int completedGoalsForToday = 0;
+
+    for (var goal in goals.values) {
+      if (goal.isVisible(dateSelected)) {
+        totalGoalsForToday++;
+        if (goal.isCompletedForDate(dateSelected, userData)) {
+          completedGoalsForToday++;
+        }
+      }
+    }
+
+    return totalGoalsForToday > 0 && completedGoalsForToday == totalGoalsForToday;
+  }
+
+  Future<void> _checkRegistrationPrompt() async {
+    // Only check if user is not signed in
+    if (FirebaseService.instance.user != null) return;
+
+    // Check if we should prompt for registration
+    final shouldPrompt = await LocalStorageService.instance.shouldPromptForRegistration();
+
+    if (shouldPrompt && mounted) {
+      // Wait a bit before showing the dialog
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => RegistrationPromptDialog(
+          onRegister: () {
+            Navigator.pop(context);
+            // Navigate to login screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginCustomScreen()),
+            );
+          },
+          onLater: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+    }
+  }
+
+  Future<void> _checkReviewPrompt() async {
+    // Check if we should request a review
+    final shouldRequest = await ReviewService.instance.shouldRequestReview(
+      userData.tasks.length,
+    );
+
+    if (shouldRequest && mounted) {
+      // Wait a bit before showing the dialog
+      await Future.delayed(const Duration(seconds: 3));
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (context) => ReviewPromptDialog(
+          onReviewNow: () async {
+            Navigator.pop(context);
+            await ReviewService.instance.requestReview();
+            await ReviewService.instance.markReviewAsCompleted();
+          },
+          onLater: () {
+            Navigator.pop(context);
+          },
+          onNoThanks: () async {
+            Navigator.pop(context);
+            await ReviewService.instance.markReviewAsCompleted();
+          },
+        ),
+      );
+    }
   }
 
   @override

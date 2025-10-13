@@ -2,6 +2,8 @@ import 'package:daily_habits/screens/achievements.dart';
 import 'package:daily_habits/screens/profile.dart';
 import 'package:daily_habits/screens/statistics.dart';
 import 'package:daily_habits/screens/friends.dart';
+import 'package:daily_habits/screens/leaderboard.dart';
+import 'package:daily_habits/screens/rewards.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -90,6 +92,34 @@ class SideMenu extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const FriendsScreen()),
+                );
+              },
+            ),
+          ),
+          Card(
+            elevation: 2,
+            child: ListTile(
+              leading: const Icon(Icons.leaderboard, color: AppColors.primarys),
+              title: const Text('Leaderboard'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
+                );
+              },
+            ),
+          ),
+          Card(
+            elevation: 2,
+            child: ListTile(
+              leading: const Icon(Icons.card_giftcard, color: AppColors.primarys),
+              title: const Text('Rewards'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RewardsScreen()),
                 );
               },
             ),
