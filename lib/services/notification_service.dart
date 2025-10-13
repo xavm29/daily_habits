@@ -82,14 +82,15 @@ class NotificationService {
     required int id,
     required String title,
     required String body,
-    required Time time,
+    required int hour,
+    required int minute,
     String? payload,
   }) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      _nextInstanceOfTime(time),
+      _nextInstanceOfTime(hour, minute),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_habits_channel',
@@ -109,16 +110,16 @@ class NotificationService {
     );
   }
 
-  tz.TZDateTime _nextInstanceOfTime(Time time) {
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
       now.day,
-      time.hour,
-      time.minute,
-      time.second,
+      hour,
+      minute,
+      0,
     );
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));

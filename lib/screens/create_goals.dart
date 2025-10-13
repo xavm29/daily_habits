@@ -289,11 +289,8 @@ class _CreateGoalsState extends State<CreateGoals> {
                         id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                         title: 'Reminder: ${goal.title}',
                         body: 'Don\'t forget to complete your habit today!',
-                        time: Time(
-                          hourReminder!.hour,
-                          hourReminder!.minute,
-                          0,
-                        ),
+                        hour: hourReminder!.hour,
+                        minute: hourReminder!.minute,
                         payload: goalTextController.text,
                       );
 
