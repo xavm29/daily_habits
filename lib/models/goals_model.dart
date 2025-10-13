@@ -15,6 +15,11 @@ class Goal {
   static const kSaturday = 6;
   static const kSunday = 7;
 
+  // Goal types
+  static const kTypeCheckbox = 1; // Simple checkbox (completed/not completed)
+  static const kTypeQuantity = 2; // Quantity tracking (e.g., 8 glasses of water)
+  static const kTypeDuration = 3; // Duration tracking (e.g., 30 minutes of reading)
+
   late String id;
   late String title;
 
@@ -25,8 +30,13 @@ class Goal {
   late DateTime hourReminder;
   DateTime? lastCompleted;
 
+  // New quantitative tracking fields
+  late int goalType; // Type of goal (checkbox, quantity, duration)
+  double? targetValue; // Target value (e.g., 8 for 8 glasses, 30 for 30 minutes)
+  String? unit; // Unit of measurement (e.g., "glasses", "minutes", "km")
+
   Goal(this.title, this.category, this.periodic, this.weekDays, this.endDate,
-      this.hourReminder);
+      this.hourReminder, {this.goalType = kTypeCheckbox, this.targetValue, this.unit});
 
   Goal.fromJson(Map<String, dynamic> json) {
     title = json['title'] ?? "Goal---";
@@ -38,6 +48,9 @@ class Goal {
     lastCompleted = (json['lastCompleted'] != null)
         ? (json['lastCompleted'] as Timestamp).toDate()
         : null;
+    goalType = json['goalType'] ?? kTypeCheckbox;
+    targetValue = json['targetValue']?.toDouble();
+    unit = json['unit'];
   }
 
   bool isVisible(DateTime dateTime) {
@@ -78,7 +91,10 @@ class Goal {
       'weekDays': weekDays,
       'endDate': endDate,
       'hourReminder': hourReminder,
-      'lastCompleted': lastCompleted
+      'lastCompleted': lastCompleted,
+      'goalType': goalType,
+      'targetValue': targetValue,
+      'unit': unit,
     };
   }
 }

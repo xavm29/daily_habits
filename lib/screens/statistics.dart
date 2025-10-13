@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../models/user_data.dart';
 import '../services/firebase_service.dart';
+import '../services/export_service.dart';
+import '../models/gamification_model.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -328,11 +330,135 @@ class _StatisticsState extends State<Statistics> {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
+
+              // Export Section
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Export Data',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Download your habits data in different formats',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () => _exportToCSV(),
+                              icon: const Icon(Icons.table_chart),
+                              label: const Text('Export CSV'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () => _exportToPDF(),
+                              icon: const Icon(Icons.picture_as_pdf),
+                              label: const Text('Export PDF'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _exportToCSV() async {
+    try {
+      await ExportService.instance.exportToCSV(
+        goals: goals.values.toList(),
+        tasks: userData.tasks,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('CSV exported successfully! 📊'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error exporting CSV: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportToPDF() async {
+    try {
+      final totalXP = GamificationService.calculateXP(
+        habitsCompleted: userData.tasks.length,
+        streakDays: currentStreak,
+      );
+
+      await ExportService.instance.exportToPDF(
+        goals: goals.values.toList(),
+        tasks: userData.tasks,
+        statistics: {
+          'currentStreak': currentStreak,
+          'longestStreak': longestStreak,
+          'totalXP': totalXP,
+        },
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PDF report exported successfully! 📄'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error exporting PDF: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   int _getActiveDays() {

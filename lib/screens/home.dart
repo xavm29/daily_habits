@@ -12,6 +12,7 @@ import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
 import '../widgets/side_menu.dart';
+import '../widgets/quantitative_dialog.dart';
 import 'create_goals.dart';
 
 class Home extends StatefulWidget {
@@ -67,6 +68,79 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _confettiController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleCheckboxCompletion(String key, bool? value) async {
+    if (value == true) {
+      // Play confetti animation
+      _confettiController.play();
+
+      // Animate checkbox
+      _animationController.forward().then((_) {
+        _animationController.reverse();
+      });
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Great job! Keep it up! 🎉'),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    var task = CompletedTask(key, dateSelected);
+    userData.tasks.add(task);
+    await FirebaseService.instance.saveCompletedGoals(task);
+    setState(() {});
+  }
+
+  void _showQuantitativeDialog(String key) {
+    showDialog(
+      context: context,
+      builder: (context) => QuantitativeDialog(
+        goal: goals[key]!,
+        onComplete: (value, notes, mood) async {
+          // Play confetti animation
+          _confettiController.play();
+
+          // Show success message with achieved value
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('Completed: $value ${goals[key]!.unit ?? ""}! 🎉'),
+                ],
+              ),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+
+          var task = CompletedTask(
+            key,
+            dateSelected,
+            achievedValue: value,
+            notes: notes,
+            mood: mood,
+          );
+          userData.tasks.add(task);
+          await FirebaseService.instance.saveCompletedGoals(task);
+          setState(() {});
+        },
+      ),
+    );
   }
 
   @override
@@ -126,53 +200,39 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       child: Card(
                           child: ListTile(
                         title: Text(goals[key]!.title),
-                        leading: const Icon(Icons.flag),
-                        trailing: ScaleTransition(
-                          scale: Tween<double>(begin: 1.0, end: 1.2).animate(
-                            CurvedAnimation(
-                              parent: _animationController,
-                              curve: Curves.elasticOut,
-                            ),
-                          ),
-                          child: Checkbox(
-                            value: goals[key]!
-                                .isCompletedForDate(dateSelected, userData),
-                            onChanged: (bool? value) async {
-                              if (value == true) {
-                                // Play confetti animation
-                                _confettiController.play();
-
-                                // Animate checkbox
-                                _animationController.forward().then((_) {
-                                  _animationController.reverse();
-                                });
-
-                                // Show success message
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Row(
-                                      children: const [
-                                        Icon(Icons.check_circle,
-                                            color: Colors.white),
-                                        SizedBox(width: 8),
-                                        Text('Great job! Keep it up! 🎉'),
-                                      ],
-                                    ),
-                                    backgroundColor: Colors.green,
-                                    behavior: SnackBarBehavior.floating,
-                                    duration: const Duration(seconds: 2),
-                                  ),
-                                );
-                              }
-
-                              var task = CompletedTask(key, dateSelected);
-                              userData.tasks.add(task);
-                              await FirebaseService.instance
-                                  .saveCompletedGoals(task);
-                              setState(() {});
-                            },
-                          ),
+                        subtitle: goals[key]!.goalType != Goal.kTypeCheckbox
+                            ? Text('Target: ${goals[key]!.targetValue} ${goals[key]!.unit ?? ""}')
+                            : null,
+                        leading: Icon(
+                          goals[key]!.goalType == Goal.kTypeDuration
+                              ? Icons.timer
+                              : goals[key]!.goalType == Goal.kTypeQuantity
+                                  ? Icons.numbers
+                                  : Icons.flag,
                         ),
+                        trailing: goals[key]!.goalType == Goal.kTypeCheckbox
+                            ? ScaleTransition(
+                                scale: Tween<double>(begin: 1.0, end: 1.2).animate(
+                                  CurvedAnimation(
+                                    parent: _animationController,
+                                    curve: Curves.elasticOut,
+                                  ),
+                                ),
+                                child: Checkbox(
+                                  value: goals[key]!
+                                      .isCompletedForDate(dateSelected, userData),
+                                  onChanged: (bool? value) async {
+                                    await _handleCheckboxCompletion(key, value);
+                                  },
+                                ),
+                              )
+                            : ElevatedButton.icon(
+                                icon: const Icon(Icons.add_circle, size: 18),
+                                label: const Text('Track'),
+                                onPressed: () {
+                                  _showQuantitativeDialog(key);
+                                },
+                              ),
                       )),
                     )
               ],

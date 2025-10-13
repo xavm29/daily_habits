@@ -65,4 +65,8 @@ class Challenge {
     if (targetCount == 0) return 0.0;
     return (completedCount / targetCount).clamp(0.0, 1.0);
   }
+
+  bool isParticipant(String userId) {
+    return participants.contains(userId);
+  }
 }

@@ -20,7 +20,10 @@ class _CreateGoalsState extends State<CreateGoals> {
   DateTime? hourReminder;
   late TextEditingController goalTextController;
   late TextEditingController numberTextController;
+  late TextEditingController targetValueController;
+  late TextEditingController unitController;
   int periodic = 0;
+  int goalType = Goal.kTypeCheckbox;
   final List<int> weekDays = [];
 
   final ButtonStyle styleSelected = ElevatedButton.styleFrom(
@@ -43,6 +46,8 @@ class _CreateGoalsState extends State<CreateGoals> {
     super.initState();
     goalTextController = TextEditingController();
     numberTextController = TextEditingController();
+    targetValueController = TextEditingController();
+    unitController = TextEditingController();
   }
 
   @override
@@ -95,6 +100,92 @@ class _CreateGoalsState extends State<CreateGoals> {
                       ),
                     )
                   ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  "Goal Type",
+                  style: TextStyles.title,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            goalType = Goal.kTypeCheckbox;
+                          });
+                        },
+                        style: goalType == Goal.kTypeCheckbox
+                            ? styleSelected
+                            : styleUnselected,
+                        child: const Text("Checkbox")),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            goalType = Goal.kTypeQuantity;
+                          });
+                        },
+                        style: goalType == Goal.kTypeQuantity
+                            ? styleSelected
+                            : styleUnselected,
+                        child: const Text("Quantity")),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            goalType = Goal.kTypeDuration;
+                          });
+                        },
+                        style: goalType == Goal.kTypeDuration
+                            ? styleSelected
+                            : styleUnselected,
+                        child: const Text("Duration")),
+                  ],
+                ),
+              ),
+              if (goalType != Goal.kTypeCheckbox)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                            labelText: 'Target',
+                          ),
+                          controller: targetValueController,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                            labelText: goalType == Goal.kTypeDuration ? 'Unit (min)' : 'Unit',
+                          ),
+                          controller: unitController,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  "Frequency",
+                  style: TextStyles.title,
                 ),
               ),
               Padding(
@@ -273,13 +364,30 @@ class _CreateGoalsState extends State<CreateGoals> {
                         );
                         return;
                       }
+                      double? targetValue;
+                      String? unit;
+
+                      if (goalType != Goal.kTypeCheckbox) {
+                        if (targetValueController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please enter a target value')),
+                          );
+                          return;
+                        }
+                        targetValue = double.tryParse(targetValueController.text);
+                        unit = unitController.text.isEmpty ? null : unitController.text;
+                      }
+
                       final goal = Goal(
                           goalTextController.text,
                           "",
                           periodic,
                           weekDays,
                           endDate!,
-                          hourReminder!);
+                          hourReminder!,
+                          goalType: goalType,
+                          targetValue: targetValue,
+                          unit: unit);
 
                       await FirebaseService.instance.saveGoal(goal);
 
