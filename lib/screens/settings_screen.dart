@@ -3,6 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
 import '../services/analytics_service.dart';
+import '../services/firebase_service.dart';
+import '../services/local_storage_service.dart';
+import '../services/sound_service.dart';
+import '../services/vibration_service.dart';
+import '../models/user_data.dart';
 import '../styles/styles.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -31,8 +36,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _showCompletedHabits = prefs.getBool('show_completed') ?? true;
       _showProgressBar = prefs.getBool('show_progress') ?? true;
-      _enableSound = prefs.getBool('enable_sound') ?? true;
-      _enableVibration = prefs.getBool('enable_vibration') ?? true;
+      _enableSound = SoundService.instance.isEnabled;
+      _enableVibration = VibrationService.instance.isEnabled;
       _weekStartDay = prefs.getInt('week_start_day') ?? 1;
       _dateFormat = prefs.getString('date_format') ?? 'dd/MM/yyyy';
     });
@@ -126,11 +131,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: const Text('Sound Effects'),
                   subtitle: const Text('Play sounds when completing habits'),
                   value: _enableSound,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
                       _enableSound = value;
                     });
-                    _saveSetting('enable_sound', value);
+                    await SoundService.instance.setEnabled(value);
                   },
                   activeColor: AppColors.primarys,
                 ),
@@ -140,11 +145,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: const Text('Vibration'),
                   subtitle: const Text('Vibrate on habit completion'),
                   value: _enableVibration,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
                       _enableVibration = value;
                     });
-                    _saveSetting('enable_vibration', value);
+                    await VibrationService.instance.setEnabled(value);
                   },
                   activeColor: AppColors.primarys,
                 ),
@@ -294,14 +299,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Data cleared successfully'),
-                  backgroundColor: Colors.green,
+
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
                 ),
               );
+
+              try {
+                // Clear local storage
+                await LocalStorageService.instance.clearLocalData();
+
+                // Clear Firebase data if user is logged in
+                final user = FirebaseService.instance.user;
+                if (user != null) {
+                  await FirebaseService.instance.clearAllUserData(user.uid);
+                }
+
+                // Clear SharedPreferences (except theme preference)
+                final prefs = await SharedPreferences.getInstance();
+                final isDarkMode = prefs.getBool('isDarkMode');
+                await prefs.clear();
+                if (isDarkMode != null) {
+                  await prefs.setBool('isDarkMode', isDarkMode);
+                }
+
+                // Clear provider data
+                if (mounted) {
+                  final userData = Provider.of<UserData>(context, listen: false);
+                  userData.tasks.clear();
+                }
+
+                // Track analytics
+                await AnalyticsService.instance.logCustomEvent(
+                  eventName: 'clear_all_data',
+                );
+
+                // Close loading dialog
+                if (mounted) Navigator.pop(context);
+
+                // Show success message
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Data cleared successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                // Close loading dialog
+                if (mounted) Navigator.pop(context);
+
+                // Show error message
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error clearing data: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Clear All'),

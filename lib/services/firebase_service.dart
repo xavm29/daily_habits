@@ -103,4 +103,56 @@ class FirebaseService {
         .collection('completedGoals')
         .add(task.toJson());
   }
+
+  Future<void> clearAllUserData(String userId) async {
+    // Delete all goals
+    final goalsSnapshot = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('goals')
+        .get();
+    for (var doc in goalsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete all completed tasks
+    final tasksSnapshot = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('completedGoals')
+        .get();
+    for (var doc in tasksSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete all challenges
+    final challengesSnapshot = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('challenges')
+        .get();
+    for (var doc in challengesSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete all rewards
+    final rewardsSnapshot = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('rewards')
+        .get();
+    for (var doc in rewardsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete all achievements
+    final achievementsSnapshot = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('achievements')
+        .get();
+    for (var doc in achievementsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
 }

@@ -18,6 +18,8 @@ import '../services/local_storage_service.dart';
 import '../services/review_service.dart';
 import '../services/analytics_service.dart';
 import '../services/crashlytics_service.dart';
+import '../services/sound_service.dart';
+import '../services/vibration_service.dart';
 import '../widgets/side_menu.dart';
 import '../widgets/quantitative_dialog.dart';
 import '../widgets/registration_prompt_dialog.dart';
@@ -40,6 +42,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   CalendarFormat calendarFormat = CalendarFormat.week;
   late ConfettiController _confettiController;
   late AnimationController _animationController;
+  bool _showCompletedHabits = true;
+  bool _showProgressBar = true;
+  int _weekStartDay = 1; // 1 = Monday, 0 = Sunday
+  String _dateFormat = 'dd/MM/yyyy';
 
   @override
   void initState() {
@@ -72,11 +78,24 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       setState(() {});
     });
 
+    // Load settings
+    _loadSettings();
+
     // Check for registration prompt
     _checkRegistrationPrompt();
 
     // Check for review prompt
     _checkReviewPrompt();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _showCompletedHabits = prefs.getBool('show_completed') ?? true;
+      _showProgressBar = prefs.getBool('show_progress') ?? true;
+      _weekStartDay = prefs.getInt('week_start_day') ?? 1;
+      _dateFormat = prefs.getString('date_format') ?? 'dd/MM/yyyy';
+    });
   }
 
   @override
@@ -90,6 +109,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     if (value == true) {
       // Play confetti animation
       _confettiController.play();
+
+      // Play sound and vibration
+      await SoundService.instance.playSuccessSound();
+      await VibrationService.instance.vibrateSuccess();
 
       // Animate checkbox
       _animationController.forward().then((_) {
@@ -151,6 +174,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         onComplete: (value, notes, mood) async {
           // Play confetti animation
           _confettiController.play();
+
+          // Play sound and vibration
+          await SoundService.instance.playSuccessSound();
+          await VibrationService.instance.vibrateSuccess();
 
           // Calculate coins earned
           int currentStreak = _getCurrentStreak();
@@ -254,6 +281,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return totalGoalsForToday > 0 && completedGoalsForToday == totalGoalsForToday;
   }
 
+  double _getGoalProgress(String key) {
+    final goal = goals[key];
+    if (goal == null || goal.targetValue == null) return 0.0;
+
+    // Find completed tasks for this goal on the selected date
+    final completedTasks = userData.tasks.where((task) {
+      final taskDate = DateTime(
+        task.completedDateTime.year,
+        task.completedDateTime.month,
+        task.completedDateTime.day,
+      );
+      final selected = DateTime(
+        dateSelected.year,
+        dateSelected.month,
+        dateSelected.day,
+      );
+      return task.goalId == key && taskDate == selected;
+    });
+
+    if (completedTasks.isEmpty) return 0.0;
+
+    // Sum up achieved values
+    double totalAchieved = 0.0;
+    for (var task in completedTasks) {
+      totalAchieved += task.achievedValue ?? 0.0;
+    }
+
+    // Calculate progress (cap at 1.0 for 100%)
+    double progress = totalAchieved / goal.targetValue!;
+    return progress > 1.0 ? 1.0 : progress;
+  }
+
   Future<void> _checkRegistrationPrompt() async {
     // Only check if user is not signed in
     if (FirebaseService.instance.user != null) return;
@@ -353,6 +412,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             focusedDay: focusedDay,
             selectedDayPredicate: (day) => isSameDay(dateSelected, day),
             calendarFormat: calendarFormat,
+            startingDayOfWeek: _weekStartDay == 0 ? StartingDayOfWeek.sunday : StartingDayOfWeek.monday,
             onDaySelected: (selectedDay, focused) {
               setState(() {
                 dateSelected = selectedDay;
@@ -385,16 +445,32 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           Expanded(
             child: ListView(
               children: [
+                // Pending habits
                 for (var key in goals.keys)
                   if (!goals[key]!.isCompletedForDate(dateSelected, userData) &&
                       goals[key]!.isVisible(dateSelected))
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Card(
-                          child: ListTile(
+                          child: Column(
+                            children: [
+                              ListTile(
                         title: Text(goals[key]!.title),
                         subtitle: goals[key]!.goalType != Goal.kTypeCheckbox
-                            ? Text('${l10n.target}: ${goals[key]!.targetValue} ${goals[key]!.unit ?? ""}')
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('${l10n.target}: ${goals[key]!.targetValue} ${goals[key]!.unit ?? ""}'),
+                                  if (_showProgressBar && goals[key]!.goalType != Goal.kTypeCheckbox)
+                                    const SizedBox(height: 8),
+                                  if (_showProgressBar && goals[key]!.goalType != Goal.kTypeCheckbox)
+                                    LinearProgressIndicator(
+                                      value: _getGoalProgress(key),
+                                      backgroundColor: Colors.grey[300],
+                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primarys),
+                                    ),
+                                ],
+                              )
                             : null,
                         leading: Icon(
                           goals[key]!.goalType == Goal.kTypeDuration
@@ -426,8 +502,43 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   _showQuantitativeDialog(key);
                                 },
                               ),
-                      )),
-                    )
+                      ),
+                            ],
+                          )),
+                    ),
+                // Completed habits section
+                if (_showCompletedHabits && goals.values.any((g) => g.isCompletedForDate(dateSelected, userData) && g.isVisible(dateSelected)))
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(l10n.completed, style: TextStyles.bigText),
+                  ),
+                if (_showCompletedHabits)
+                  for (var key in goals.keys)
+                    if (goals[key]!.isCompletedForDate(dateSelected, userData) &&
+                        goals[key]!.isVisible(dateSelected))
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Colors.green.withOpacity(0.1),
+                          child: ListTile(
+                            title: Text(
+                              goals[key]!.title,
+                              style: const TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            subtitle: goals[key]!.goalType != Goal.kTypeCheckbox
+                                ? Text(
+                                    '${l10n.target}: ${goals[key]!.targetValue} ${goals[key]!.unit ?? ""}',
+                                    style: const TextStyle(color: Colors.grey),
+                                  )
+                                : null,
+                            leading: const Icon(Icons.check_circle, color: Colors.green),
+                            trailing: const Icon(Icons.done, color: Colors.green),
+                          ),
+                        ),
+                      )
               ],
             ),
           )

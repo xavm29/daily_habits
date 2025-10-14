@@ -13,6 +13,9 @@ import 'providers/theme_provider.dart';
 import 'screens/splash.dart';
 import 'services/crashlytics_service.dart';
 import 'services/analytics_service.dart';
+import 'services/sound_service.dart';
+import 'services/vibration_service.dart';
+import 'utils/date_formatter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +29,13 @@ void main() async {
   await CrashlyticsService.instance.initialize();
 
   // Analytics is initialized automatically with FirebaseAnalytics.instance
+
+  // Initialize Sound and Vibration services
+  await SoundService.instance.initialize();
+  await VibrationService.instance.initialize();
+
+  // Initialize Date Formatter
+  await DateFormatter.loadFormat();
 
   runApp(const MyApp());
 }

@@ -273,172 +273,14 @@ class _ChallengesState extends State<Challenges> {
   }
 
   void _showCreateChallengeDialog() {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final durationController = TextEditingController(text: '7');
-    final targetController = TextEditingController(text: '7');
-    String selectedCategory = 'General';
-
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create Custom Challenge'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Challenge Title*',
-                  hintText: 'e.g., Morning Meditation Challenge',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description*',
-                  hintText: 'What is this challenge about?',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: durationController,
-                decoration: const InputDecoration(
-                  labelText: 'Duration (days)*',
-                  hintText: 'e.g., 7, 14, 21, 30',
-                  border: OutlineInputBorder(),
-                  suffixText: 'days',
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: targetController,
-                decoration: const InputDecoration(
-                  labelText: 'Target Count*',
-                  hintText: 'e.g., 7 days of completion',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              StatefulBuilder(
-                builder: (context, setDialogState) {
-                  return DropdownButtonFormField<String>(
-                    value: selectedCategory,
-                    decoration: const InputDecoration(
-                      labelText: 'Category*',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: ['General', 'Consistency', 'Health', 'Productivity']
-                        .map((category) => DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setDialogState(() {
-                        selectedCategory = value!;
-                      });
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              titleController.dispose();
-              descriptionController.dispose();
-              durationController.dispose();
-              targetController.dispose();
-              Navigator.pop(context);
-            },
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Validate inputs
-              if (titleController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a title')),
-                );
-                return;
-              }
-
-              if (descriptionController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a description')),
-                );
-                return;
-              }
-
-              final duration = int.tryParse(durationController.text);
-              if (duration == null || duration < 1) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Please enter a valid duration')),
-                );
-                return;
-              }
-
-              final target = int.tryParse(targetController.text);
-              if (target == null || target < 1) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Please enter a valid target count')),
-                );
-                return;
-              }
-
-              // Create new challenge
-              final now = DateTime.now();
-              final newChallenge = Challenge(
-                title: titleController.text.trim(),
-                description: descriptionController.text.trim(),
-                durationDays: duration,
-                startDate: now,
-                endDate: now.add(Duration(days: duration)),
-                participants: ['user1'], // Auto-join creator
-                createdBy: 'user1',
-                category: selectedCategory,
-                targetCount: target,
-              );
-
-              setState(() {
-                challenges.add(newChallenge);
-              });
-
-              // Clean up controllers
-              titleController.dispose();
-              descriptionController.dispose();
-              durationController.dispose();
-              targetController.dispose();
-
-              Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content:
-                      Text('Challenge "${newChallenge.title}" created! 🎉'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primarys,
-            ),
-            child: const Text('Create'),
-          ),
-        ],
+      builder: (context) => _CreateChallengeDialog(
+        onChallengeCreated: (challenge) {
+          setState(() {
+            challenges.add(challenge);
+          });
+        },
       ),
     );
   }
@@ -478,6 +320,178 @@ class _CategoryChip extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+}
+
+class _CreateChallengeDialog extends StatefulWidget {
+  final Function(Challenge) onChallengeCreated;
+
+  const _CreateChallengeDialog({required this.onChallengeCreated});
+
+  @override
+  State<_CreateChallengeDialog> createState() => _CreateChallengeDialogState();
+}
+
+class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final durationController = TextEditingController(text: '7');
+  final targetController = TextEditingController(text: '7');
+  String selectedCategory = 'General';
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    durationController.dispose();
+    targetController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Create Custom Challenge'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'Challenge Title*',
+                hintText: 'e.g., Morning Meditation Challenge',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Description*',
+                hintText: 'What is this challenge about?',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: durationController,
+              decoration: const InputDecoration(
+                labelText: 'Duration (days)*',
+                hintText: 'e.g., 7, 14, 21, 30',
+                border: OutlineInputBorder(),
+                suffixText: 'days',
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: targetController,
+              decoration: const InputDecoration(
+                labelText: 'Target Count*',
+                hintText: 'e.g., 7 days of completion',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: selectedCategory,
+              decoration: const InputDecoration(
+                labelText: 'Category*',
+                border: OutlineInputBorder(),
+              ),
+              items: ['General', 'Consistency', 'Health', 'Productivity']
+                  .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value!;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // Validate inputs
+            if (titleController.text.trim().isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please enter a title')),
+              );
+              return;
+            }
+
+            if (descriptionController.text.trim().isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please enter a description')),
+              );
+              return;
+            }
+
+            final duration = int.tryParse(durationController.text);
+            if (duration == null || duration < 1) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please enter a valid duration')),
+              );
+              return;
+            }
+
+            final target = int.tryParse(targetController.text);
+            if (target == null || target < 1) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Please enter a valid target count')),
+              );
+              return;
+            }
+
+            // Create new challenge
+            final now = DateTime.now();
+            final newChallenge = Challenge(
+              title: titleController.text.trim(),
+              description: descriptionController.text.trim(),
+              durationDays: duration,
+              startDate: now,
+              endDate: now.add(Duration(days: duration)),
+              participants: ['user1'], // Auto-join creator
+              createdBy: 'user1',
+              category: selectedCategory,
+              targetCount: target,
+            );
+
+            widget.onChallengeCreated(newChallenge);
+
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Challenge "${newChallenge.title}" created! 🎉'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primarys,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Create'),
+        ),
+      ],
     );
   }
 }
