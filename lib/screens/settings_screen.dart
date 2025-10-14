@@ -183,28 +183,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSectionHeader('Data & Privacy'),
           Card(
             elevation: 2,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.backup, color: AppColors.primarys),
-                  title: const Text('Backup Data'),
-                  subtitle: const Text('Export your data'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Backup feature coming soon!')),
-                    );
-                  },
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.delete_forever, color: Colors.red),
-                  title: const Text('Clear All Data', style: TextStyle(color: Colors.red)),
-                  subtitle: const Text('This cannot be undone'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => _showClearDataDialog(),
-                ),
-              ],
+            child: ListTile(
+              leading: const Icon(Icons.delete_forever, color: Colors.red),
+              title: const Text('Clear All Data', style: TextStyle(color: Colors.red)),
+              subtitle: const Text('This cannot be undone'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => _showClearDataDialog(),
             ),
           ),
         ],
