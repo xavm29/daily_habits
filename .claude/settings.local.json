@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(flutter:*)"
+      "Bash(flutter:*)",
+      "Bash(C:srcflutterbincachedart-sdkbindart.exe test --help)",
+      "Bash(C:srcflutterbincachedart-sdkbindart.exe test)",
+      "Bash(where flutter)",
+      "Bash(C:srcflutterbinflutter.bat test)",
+      "Bash(cmd.exe /c \"cd /d C:\\Users\\xavi\\StudioProjects\\daily_habits && flutter test\")",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []

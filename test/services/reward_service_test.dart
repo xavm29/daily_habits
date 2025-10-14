@@ -2,10 +2,35 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:daily_habits/services/reward_service.dart';
 import 'package:daily_habits/models/reward_model.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+
+// Mock Firebase initialization for testing
+class FakeFirebaseOptions {
+  static FirebaseOptions get currentPlatform => const FirebaseOptions(
+    apiKey: 'fake-api-key',
+    appId: 'fake-app-id',
+    messagingSenderId: 'fake-sender-id',
+    projectId: 'fake-project-id',
+  );
+}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('RewardService Tests', () {
     late RewardService rewardService;
+
+    setUpAll(() async {
+      // Initialize Firebase for testing
+      try {
+        await Firebase.initializeApp(
+          options: FakeFirebaseOptions.currentPlatform,
+        );
+      } catch (e) {
+        // Firebase already initialized
+      }
+    });
 
     setUp(() {
       rewardService = RewardService.instance;

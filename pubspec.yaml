@@ -80,6 +80,10 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
 
+  # Testing dependencies for mocking
+  mocktail: ^1.0.0
+  fake_cloud_firestore: ^3.0.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
