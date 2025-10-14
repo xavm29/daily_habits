@@ -1,10 +1,13 @@
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'firebase_options.dart';
+import 'l10n/app_localizations.dart';
 import 'models/user_data.dart';
 import 'providers/theme_provider.dart';
 import 'screens/splash.dart';
@@ -14,8 +17,10 @@ import 'services/analytics_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase with platform-specific options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize Crashlytics
   await CrashlyticsService.instance.initialize();
@@ -42,10 +47,15 @@ class MyApp extends StatelessWidget {
               AnalyticsService.instance.observer,
             ],
             localizationsDelegates: const [
+              AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en'), Locale('es')],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('es'),
+            ],
             title: 'Daily Habits',
             theme: themeProvider.lightTheme,
             darkTheme: themeProvider.darkTheme,

@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
@@ -335,9 +336,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(l10n.home),
       ),
       drawer: const SideMenu(),
       body: Stack(
@@ -375,9 +378,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("To be done", style: TextStyles.bigText),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(l10n.toBeDone, style: TextStyles.bigText),
           ),
           Expanded(
             child: ListView(
@@ -391,7 +394,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           child: ListTile(
                         title: Text(goals[key]!.title),
                         subtitle: goals[key]!.goalType != Goal.kTypeCheckbox
-                            ? Text('Target: ${goals[key]!.targetValue} ${goals[key]!.unit ?? ""}')
+                            ? Text('${l10n.target}: ${goals[key]!.targetValue} ${goals[key]!.unit ?? ""}')
                             : null,
                         leading: Icon(
                           goals[key]!.goalType == Goal.kTypeDuration
@@ -418,7 +421,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               )
                             : ElevatedButton.icon(
                                 icon: const Icon(Icons.add_circle, size: 18),
-                                label: const Text('Track'),
+                                label: Text(l10n.track),
                                 onPressed: () {
                                   _showQuantitativeDialog(key);
                                 },
