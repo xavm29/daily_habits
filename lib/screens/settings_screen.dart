@@ -13,7 +13,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String _selectedLanguage = 'English';
   bool _showCompletedHabits = true;
   bool _showProgressBar = true;
   bool _enableSound = true;
@@ -30,7 +29,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedLanguage = prefs.getString('language') ?? 'English';
       _showCompletedHabits = prefs.getBool('show_completed') ?? true;
       _showProgressBar = prefs.getBool('show_progress') ?? true;
       _enableSound = prefs.getBool('enable_sound') ?? true;
@@ -181,20 +179,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 24),
 
-          // Language Section
-          _buildSectionHeader('Language & Region'),
-          Card(
-            elevation: 2,
-            child: ListTile(
-              leading: const Icon(Icons.language, color: AppColors.primarys),
-              title: const Text('Language'),
-              subtitle: Text(_selectedLanguage),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => _showLanguageDialog(),
-            ),
-          ),
-          const SizedBox(height: 24),
-
           // Data & Privacy
           _buildSectionHeader('Data & Privacy'),
           Card(
@@ -309,39 +293,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _saveSetting('date_format', value!);
         Navigator.pop(context);
       },
-    );
-  }
-
-  void _showLanguageDialog() {
-    final languages = ['English', 'Español', 'Français', 'Deutsch', 'Português'];
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Language'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: languages.map((lang) {
-            return RadioListTile<String>(
-              title: Text(lang),
-              value: lang,
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value!;
-                });
-                _saveSetting('language', value!);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Language support coming soon!'),
-                  ),
-                );
-              },
-            );
-          }).toList(),
-        ),
-      ),
     );
   }
 
