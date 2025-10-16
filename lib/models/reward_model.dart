@@ -25,15 +25,17 @@ class Reward {
     title = json['title'] ?? '';
     description = json['description'] ?? '';
     cost = json['cost'] ?? 0;
-    final codePoint = json['iconCodePoint'] ?? Icons.card_giftcard.codePoint;
-    icon = const IconData(0xe22e, fontFamily: 'MaterialIcons'); // Default icon
+    final codePoint = json['iconCodePoint'];
     if (codePoint is int) {
       icon = IconData(codePoint, fontFamily: 'MaterialIcons');
+    } else {
+      icon = const IconData(0xe22e, fontFamily: 'MaterialIcons'); // Default icon
     }
-    final colorVal = json['colorValue'] ?? Colors.blue.value;
-    color = Colors.blue;
+    final colorVal = json['colorValue'];
     if (colorVal is int) {
       color = Color(colorVal);
+    } else {
+      color = Colors.blue;
     }
     isRedeemed = json['isRedeemed'] ?? false;
     redeemedAt = json['redeemedAt'] != null
