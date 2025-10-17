@@ -29,7 +29,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
-          title: const Text("Profile"),
+          title: const Text("Perfil"),
         ),
         body: Column(children: [
           Padding(
@@ -59,9 +59,9 @@ class _ProfileState extends State<Profile> {
                               radius: 30,
                               backgroundImage: image != null
                                   ? FileImage(File(image!.path))
-                                  : FirebaseService.instance.user!.photoURL != null
+                                  : (FirebaseService.instance.user?.photoURL != null
                                       ? NetworkImage(FirebaseService.instance.user!.photoURL!)
-                                      : const AssetImage('assets/images/icon.png') as ImageProvider,
+                                      : const AssetImage('assets/images/icon.png')) as ImageProvider,
                             ),
                           ),
                         );
@@ -72,11 +72,11 @@ class _ProfileState extends State<Profile> {
                           children: [
                             Text(FirebaseService.instance.user?.displayName ??
                                 " --- "),
-                            const Text("Name"),
+                            const Text("Nombre"),
                             InkWell(
                                 onTap: () async {
                                   String? nameEntered =
-                                  await inputDialog(context, "Your name");
+                                  await inputDialog(context, "Tu nombre");
                                   if (nameEntered != null) {
                                     if (!mounted) return;
                                     userData.setUserName(nameEntered);
@@ -89,7 +89,7 @@ class _ProfileState extends State<Profile> {
                       const SizedBox(
                         width: 20,
                       ),
-                      const Text("this week"),
+                      const Text("esta semana"),
                     ],
                   ),
                   const Divider(
@@ -111,7 +111,7 @@ class _ProfileState extends State<Profile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
-                              Text("Total hours"),
+                              Text("Horas totales"),
                               Text("18", style: TextStyle(fontSize: 18)),
                             ],
                           ),
@@ -129,7 +129,7 @@ class _ProfileState extends State<Profile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
-                              Text("Completed"),
+                              Text("Completados"),
                               Text("12", style: TextStyle(fontSize: 18)),
                             ],
                           ),
@@ -223,7 +223,7 @@ class _ProfileState extends State<Profile> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Current streak"),
+                          Text("Racha actual"),
                         ],
                       ),
                     ),
@@ -232,7 +232,7 @@ class _ProfileState extends State<Profile> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("20 days"),
+                          Text("20 días"),
                         ],
                       ),
                     ),
@@ -250,8 +250,8 @@ class _ProfileState extends State<Profile> {
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
                   return SwitchListTile(
-                    title: const Text('Dark Mode'),
-                    subtitle: const Text('Switch between light and dark theme'),
+                    title: const Text('Modo Oscuro'),
+                    subtitle: const Text('Cambiar entre tema claro y oscuro'),
                     secondary: Icon(
                       themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                       color: AppColors.primarys,
@@ -284,7 +284,7 @@ class _ProfileState extends State<Profile> {
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
               child: const Text(
-                'Log out',
+                'Cerrar sesión',
                 style: TextStyles.label,
               ))
         ]

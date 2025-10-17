@@ -1,4 +1,7 @@
 import 'package:daily_habits/models/challenge_model.dart';
+import 'package:daily_habits/models/challenge_progress_model.dart';
+import 'package:daily_habits/screens/challenge_detail_screen.dart';
+import 'package:daily_habits/services/challenge_service.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -10,56 +13,20 @@ class Challenges extends StatefulWidget {
   State<Challenges> createState() => _ChallengesState();
 }
 
-class _ChallengesState extends State<Challenges> {
-  final List<Challenge> challenges = [];
+class _ChallengesState extends State<Challenges> with SingleTickerProviderStateMixin {
+  final ChallengeService _challengeService = ChallengeService.instance;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _loadChallenges();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
-  void _loadChallenges() {
-    // Sample challenges - in production these would come from Firebase
-    DateTime now = DateTime.now();
-
-    challenges.add(Challenge(
-      title: '7-Day Consistency Challenge',
-      description: 'Complete all your habits for 7 days straight',
-      durationDays: 7,
-      startDate: now.subtract(const Duration(days: 2)),
-      endDate: now.add(const Duration(days: 5)),
-      participants: ['user1', 'user2', 'user3'],
-      createdBy: 'system',
-      category: 'Consistency',
-      targetCount: 7,
-    ));
-
-    challenges.add(Challenge(
-      title: '30-Day Fitness Challenge',
-      description: 'Exercise every day for 30 days',
-      durationDays: 30,
-      startDate: now.subtract(const Duration(days: 5)),
-      endDate: now.add(const Duration(days: 25)),
-      participants: ['user1', 'user2'],
-      createdBy: 'system',
-      category: 'Health',
-      targetCount: 30,
-    ));
-
-    challenges.add(Challenge(
-      title: 'Morning Routine Master',
-      description: 'Start your day right with a morning routine',
-      durationDays: 21,
-      startDate: now,
-      endDate: now.add(const Duration(days: 21)),
-      participants: ['user1'],
-      createdBy: 'system',
-      category: 'Productivity',
-      targetCount: 21,
-    ));
-
-    setState(() {});
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,220 +34,362 @@ class _ChallengesState extends State<Challenges> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Challenges'),
+        title: const Text('Retos'),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
         actions: [
+          // Botón temporal para recrear retos (DEBUG)
           IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              _showCreateChallengeDialog();
+            icon: const Icon(Icons.refresh),
+            onPressed: () async {
+              await _challengeService.recreateDefaultChallenges();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Retos recreados exitosamente'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
             },
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
+            Tab(text: 'Mis Retos'),
+            Tab(text: 'Todos los Retos'),
+          ],
+        ),
       ),
-      body: challenges.isEmpty
-          ? const Center(
-              child: Text('No challenges available'),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: challenges.length,
-              itemBuilder: (BuildContext context, int index) {
-                final challenge = challenges[index];
-                final isParticipating =
-                    challenge.participants.contains('user1');
-                final progress = challenge.getProgress(
-                    isParticipating ? index * 3 : 0);
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        _CategoryChip(
-                                            category: challenge.category),
-                                        const Spacer(),
-                                        if (challenge.isActive())
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green[100],
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Text(
-                                              'Active',
-                                              style: TextStyle(
-                                                color: Colors.green[700],
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      challenge.title,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      challenge.description,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.calendar_today,
-                                            size: 16, color: Colors.grey[600]),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${challenge.durationDays} days',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Icon(Icons.people,
-                                            size: 16, color: Colors.grey[600]),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${challenge.participants.length} joined',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              CircularPercentIndicator(
-                                radius: 40.0,
-                                lineWidth: 8.0,
-                                percent: progress,
-                                center: Text(
-                                  "${(progress * 100).toInt()}%",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                progressColor: _getProgressColor(progress),
-                                backgroundColor: Colors.grey[200]!,
-                                circularStrokeCap: CircularStrokeCap.round,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          if (challenge.isActive())
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      setState(() {
-                                        if (isParticipating) {
-                                          challenge.participants.remove('user1');
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Left challenge successfully'),
-                                            ),
-                                          );
-                                        } else {
-                                          challenge.participants.add('user1');
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Joined challenge successfully!'),
-                                            ),
-                                          );
-                                        }
-                                      });
-                                    },
-                                    icon: Icon(isParticipating
-                                        ? Icons.exit_to_app
-                                        : Icons.emoji_events),
-                                    label: Text(isParticipating
-                                        ? 'Leave Challenge'
-                                        : 'Join Challenge'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: isParticipating
-                                          ? Colors.grey[300]
-                                          : AppColors.purplelow,
-                                      foregroundColor: isParticipating
-                                          ? Colors.black87
-                                          : Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (isParticipating) ...[
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${challenge.getDaysRemaining()} days left',
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildMyChallengesTodo(),
+          _buildAllChallenges(),
+        ],
+      ),
     );
   }
 
-  void _showCreateChallengeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => _CreateChallengeDialog(
-        onChallengeCreated: (challenge) {
-          setState(() {
-            challenges.add(challenge);
-          });
-        },
+  // Tab para los retos en los que el usuario está participando
+  Widget _buildMyChallengesTodo() {
+    return StreamBuilder<List<Challenge>>(
+      stream: _challengeService.getUserChallenges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final challenges = snapshot.data ?? [];
+
+        if (challenges.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.emoji_events_outlined, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text(
+                  'No estás en ningún reto',
+                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Ve a "Todos los Retos" para unirte',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: challenges.length,
+          itemBuilder: (context, index) {
+            return _buildChallengeCard(challenges[index], isParticipating: true);
+          },
+        );
+      },
+    );
+  }
+
+  // Tab para todos los retos disponibles
+  Widget _buildAllChallenges() {
+    return StreamBuilder<List<Challenge>>(
+      stream: _challengeService.getActiveChallenges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final challenges = snapshot.data ?? [];
+
+        if (challenges.isEmpty) {
+          return const Center(
+            child: Text('No hay retos disponibles'),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: challenges.length,
+          itemBuilder: (context, index) {
+            final challenge = challenges[index];
+            // No pasamos isParticipating aquí, lo calculamos dinámicamente en la tarjeta
+            return _buildChallengeCardDynamic(challenge);
+          },
+        );
+      },
+    );
+  }
+
+  // Tarjeta con detección dinámica de participación
+  Widget _buildChallengeCardDynamic(Challenge challenge) {
+    // Recalcular isParticipating cada vez que el challenge se actualiza
+    final isParticipating = challenge.isParticipant(
+      _challengeService.currentUserId ?? '',
+    );
+    return _buildChallengeCard(challenge, isParticipating: isParticipating);
+  }
+
+  // Construye la tarjeta del reto con progreso real
+  Widget _buildChallengeCard(Challenge challenge, {required bool isParticipating}) {
+    return StreamBuilder<ChallengeProgress?>(
+      stream: isParticipating
+        ? _challengeService.getUserProgress(challenge.id)
+        : Stream.value(null),
+      builder: (context, progressSnapshot) {
+        final progress = progressSnapshot.data;
+        final progressPercent = progress?.getProgress(challenge.targetCount) ?? 0.0;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: InkWell(
+              onTap: isParticipating
+                  ? () => _navigateToChallengeDetail(challenge)
+                  : null,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  _CategoryChip(category: challenge.category),
+                                  const Spacer(),
+                                  if (challenge.isActiveNow())
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green[100],
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'Activo',
+                                        style: TextStyle(
+                                          color: Colors.green[700],
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                challenge.title,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                challenge.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Icon(Icons.calendar_today,
+                                      size: 16, color: Colors.grey[600]),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${challenge.durationDays} días',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Icon(Icons.people,
+                                      size: 16, color: Colors.grey[600]),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${challenge.participants.length} participantes',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (isParticipating && progress != null) ...[
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Icon(Icons.local_fire_department,
+                                        size: 16, color: Colors.orange[700]),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Racha: ${progress.currentStreak} días',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.orange[700],
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        if (isParticipating)
+                          CircularPercentIndicator(
+                            radius: 40.0,
+                            lineWidth: 8.0,
+                            percent: progressPercent,
+                            center: Text(
+                              "${(progressPercent * 100).toInt()}%",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            progressColor: _getProgressColor(progressPercent),
+                            backgroundColor: Colors.grey[200]!,
+                            circularStrokeCap: CircularStrokeCap.round,
+                          ),
+                      ],
+                    ),
+                    if (isParticipating && progress != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        '${progress.completedDays} de ${challenge.targetCount} días completados',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    if (challenge.isActiveNow())
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                if (isParticipating) {
+                                  await _challengeService.leaveChallenge(challenge.id);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Has salido del reto'),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  await _challengeService.joinChallenge(challenge.id);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Te has unido al reto!'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              icon: Icon(isParticipating
+                                  ? Icons.exit_to_app
+                                  : Icons.emoji_events),
+                              label: Text(isParticipating
+                                  ? 'Salir del Reto'
+                                  : 'Unirse al Reto'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isParticipating
+                                    ? Colors.grey[300]
+                                    : AppColors.purplelow,
+                                foregroundColor: isParticipating
+                                    ? Colors.black87
+                                    : Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (isParticipating) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              '${challenge.getDaysRemaining()} días restantes',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToChallengeDetail(Challenge challenge) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChallengeDetailScreen(challenge: challenge),
       ),
     );
   }
@@ -352,7 +461,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Create Custom Challenge'),
+      title: const Text('Crear Reto Personalizado'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -361,8 +470,8 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             TextField(
               controller: titleController,
               decoration: const InputDecoration(
-                labelText: 'Challenge Title*',
-                hintText: 'e.g., Morning Meditation Challenge',
+                labelText: 'Título del Reto*',
+                hintText: 'ej., Reto de Meditación Matutina',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -370,8 +479,8 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             TextField(
               controller: descriptionController,
               decoration: const InputDecoration(
-                labelText: 'Description*',
-                hintText: 'What is this challenge about?',
+                labelText: 'Descripción*',
+                hintText: '¿De qué trata este reto?',
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
@@ -380,10 +489,10 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             TextField(
               controller: durationController,
               decoration: const InputDecoration(
-                labelText: 'Duration (days)*',
-                hintText: 'e.g., 7, 14, 21, 30',
+                labelText: 'Duración (días)*',
+                hintText: 'ej., 7, 14, 21, 30',
                 border: OutlineInputBorder(),
-                suffixText: 'days',
+                suffixText: 'días',
               ),
               keyboardType: TextInputType.number,
             ),
@@ -391,8 +500,8 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             TextField(
               controller: targetController,
               decoration: const InputDecoration(
-                labelText: 'Target Count*',
-                hintText: 'e.g., 7 days of completion',
+                labelText: 'Meta de Días*',
+                hintText: 'ej., 7 días a completar',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
@@ -401,7 +510,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             DropdownButtonFormField<String>(
               value: selectedCategory,
               decoration: const InputDecoration(
-                labelText: 'Category*',
+                labelText: 'Categoría*',
                 border: OutlineInputBorder(),
               ),
               items: ['General', 'Consistency', 'Health', 'Productivity']
@@ -424,21 +533,21 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Cancel'),
+          child: const Text('Cancelar'),
         ),
         ElevatedButton(
           onPressed: () {
             // Validate inputs
             if (titleController.text.trim().isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please enter a title')),
+                const SnackBar(content: Text('Por favor ingresa un título')),
               );
               return;
             }
 
             if (descriptionController.text.trim().isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please enter a description')),
+                const SnackBar(content: Text('Por favor ingresa una descripción')),
               );
               return;
             }
@@ -446,7 +555,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             final duration = int.tryParse(durationController.text);
             if (duration == null || duration < 1) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please enter a valid duration')),
+                const SnackBar(content: Text('Por favor ingresa una duración válida')),
               );
               return;
             }
@@ -455,7 +564,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             if (target == null || target < 1) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text('Please enter a valid target count')),
+                    content: Text('Por favor ingresa una meta válida')),
               );
               return;
             }
@@ -480,7 +589,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Challenge "${newChallenge.title}" created! 🎉'),
+                content: Text('¡Reto "${newChallenge.title}" creado! 🎉'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -489,7 +598,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             backgroundColor: AppColors.primarys,
             foregroundColor: Colors.white,
           ),
-          child: const Text('Create'),
+          child: const Text('Crear'),
         ),
       ],
     );

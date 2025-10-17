@@ -55,7 +55,7 @@ class _CreateGoalsState extends State<CreateGoals> {
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
-          title: const Text('Create Goals'),
+          title: const Text('Crear Objetivos'),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -77,7 +77,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                 child: Row(
                   children: [
                     Text(
-                      "Set your Goals",
+                      "Establece tus Objetivos",
                       style: TextStyles.title,
                     ),
                   ],
@@ -94,7 +94,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                           border: OutlineInputBorder(),
                           filled: true,
                           fillColor: Colors.white,
-                          labelText: 'Goal',
+                          labelText: 'Objetivo',
                         ),
                         controller: goalTextController,
                       ),
@@ -105,7 +105,7 @@ class _CreateGoalsState extends State<CreateGoals> {
               const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  "Goal Type",
+                  "Tipo de Objetivo",
                   style: TextStyles.title,
                 ),
               ),
@@ -133,7 +133,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: goalType == Goal.kTypeQuantity
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Quantity")),
+                        child: const Text("Cantidad")),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -143,7 +143,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: goalType == Goal.kTypeDuration
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Duration")),
+                        child: const Text("Duración")),
                   ],
                 ),
               ),
@@ -159,7 +159,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                             border: OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
-                            labelText: 'Target',
+                            labelText: 'Objetivo',
                           ),
                           controller: targetValueController,
                           keyboardType: TextInputType.number,
@@ -173,7 +173,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                             border: const OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
-                            labelText: goalType == Goal.kTypeDuration ? 'Unit (min)' : 'Unit',
+                            labelText: goalType == Goal.kTypeDuration ? 'Unidad (min)' : 'Unidad',
                           ),
                           controller: unitController,
                         ),
@@ -184,7 +184,7 @@ class _CreateGoalsState extends State<CreateGoals> {
               const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  "Frequency",
+                  "Frecuencia",
                   style: TextStyles.title,
                 ),
               ),
@@ -202,7 +202,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: periodic == Goal.kDaily
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Daily")),
+                        child: const Text("Diario")),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -212,7 +212,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: periodic == Goal.kWeekly
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Weekly")),
+                        child: const Text("Semanal")),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -222,7 +222,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: periodic == Goal.kMonthly
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Montly"))
+                        child: const Text("Mensual"))
                   ],
                 ),
               ),
@@ -230,7 +230,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "Repeat every day ",
+                    "Repetir cada día",
                     style: TextStyles.title,
                   ),
                 ),
@@ -310,7 +310,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                     },
                     title: (hourReminder != null)
                         ? Text(DateFormat('HH:mm').format(hourReminder!))
-                        : const Text('Select your time reminder'),
+                        : const Text('Selecciona la hora del recordatorio'),
                   ),
                 ),
               ),
@@ -336,7 +336,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                     },
                     title: (endDate != null)
                         ? Text(DateFormat('yyyy-MM-dd').format(endDate!))
-                        : const Text('Select your end date'),
+                        : const Text('Selecciona la fecha de finalización'),
                     leading: const Icon(Icons.calendar_month),
                   ),
                 ),
@@ -348,19 +348,19 @@ class _CreateGoalsState extends State<CreateGoals> {
                     onPressed: () async {
                       if (goalTextController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a goal')),
+                          const SnackBar(content: Text('Por favor ingresa un objetivo')),
                         );
                         return;
                       }
                       if (endDate == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please select an end date')),
+                          const SnackBar(content: Text('Por favor selecciona una fecha de finalización')),
                         );
                         return;
                       }
                       if (hourReminder == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please select a reminder time')),
+                          const SnackBar(content: Text('Por favor selecciona una hora de recordatorio')),
                         );
                         return;
                       }
@@ -370,7 +370,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                       if (goalType != Goal.kTypeCheckbox) {
                         if (targetValueController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please enter a target value')),
+                            const SnackBar(content: Text('Por favor ingresa un valor objetivo')),
                           );
                           return;
                         }
@@ -407,7 +407,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                       // Show success message
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Goal created with reminder! 🎯'),
+                          content: Text('¡Objetivo creado con recordatorio! 🎯'),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -419,7 +419,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         shape: const StadiumBorder(),
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black),
-                    label: const Text("Save")),
+                    label: const Text("Guardar")),
               )
             ], // prueba de deveolop
           ),

@@ -32,7 +32,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Rewards'),
+        title: const Text('Recompensas'),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
         bottom: TabBar(
@@ -40,8 +40,8 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           tabs: const [
-            Tab(text: 'Available', icon: Icon(Icons.card_giftcard)),
-            Tab(text: 'Redeemed', icon: Icon(Icons.check_circle)),
+            Tab(text: 'Disponibles', icon: Icon(Icons.card_giftcard)),
+            Tab(text: 'Canjeadas', icon: Icon(Icons.check_circle)),
           ],
         ),
       ),
@@ -81,7 +81,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildCoinsStat(
-                'Available Coins',
+                'Monedas Disponibles',
                 coins.availableCoins,
                 Icons.monetization_on,
                 Colors.amber,
@@ -92,7 +92,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                 color: Colors.white.withOpacity(0.3),
               ),
               _buildCoinsStat(
-                'Total Earned',
+                'Total Ganado',
                 coins.totalCoins,
                 Icons.star,
                 Colors.yellow,
@@ -103,7 +103,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                 color: Colors.white.withOpacity(0.3),
               ),
               _buildCoinsStat(
-                'Spent',
+                'Gastado',
                 coins.spentCoins,
                 Icons.shopping_cart,
                 Colors.white70,
@@ -247,7 +247,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
               if (!canAfford) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Need ${reward.cost - userCoins.availableCoins} more',
+                  'Necesitas ${reward.cost - userCoins.availableCoins} más',
                   style: const TextStyle(
                     fontSize: 10,
                     color: Colors.red,
@@ -278,12 +278,12 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                 Icon(Icons.card_giftcard, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
                 Text(
-                  'No rewards redeemed yet',
+                  'No has canjeado recompensas aún',
                   style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Complete habits to earn coins!',
+                  '¡Completa hábitos para ganar monedas!',
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
@@ -308,8 +308,8 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                 title: Text(reward.title),
                 subtitle: Text(
                   reward.redeemedAt != null
-                      ? 'Redeemed ${_formatDate(reward.redeemedAt!)}'
-                      : 'Redeemed',
+                      ? 'Canjeado ${_formatDate(reward.redeemedAt!)}'
+                      : 'Canjeado',
                   style: const TextStyle(fontSize: 12),
                 ),
                 trailing: Container(
@@ -345,7 +345,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Redeem ${reward.title}?'),
+        title: Text('¿Canjear ${reward.title}?'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -354,11 +354,11 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
             Text(reward.description, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             Text(
-              'Cost: ${reward.cost} coins',
+              'Costo: ${reward.cost} monedas',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              'You\'ll have ${userCoins.availableCoins - reward.cost} coins left',
+              'Te quedarán ${userCoins.availableCoins - reward.cost} monedas',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -366,7 +366,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -382,21 +382,21 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('🎉 ${reward.title} redeemed! Enjoy!'),
+                    content: Text('🎉 ¡${reward.title} canjeado! ¡Disfrútalo!'),
                     backgroundColor: Colors.green,
                   ),
                 );
               } else if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Failed to redeem reward'),
+                    content: Text('Error al canjear la recompensa'),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: reward.color),
-            child: const Text('Redeem'),
+            child: const Text('Canjear'),
           ),
         ],
       ),
@@ -407,19 +407,19 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Insufficient Coins'),
+        title: const Text('Monedas Insuficientes'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.warning, size: 64, color: Colors.orange),
             const SizedBox(height: 16),
             Text(
-              'You need ${reward.cost - userCoins.availableCoins} more coins to redeem this reward.',
+              'Necesitas ${reward.cost - userCoins.availableCoins} monedas más para canjear esta recompensa.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             const Text(
-              'Complete more habits to earn coins!',
+              '¡Completa más hábitos para ganar monedas!',
               style: TextStyle(fontSize: 12, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -440,13 +440,13 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+      return 'hace ${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+      return 'hace ${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+      return 'hace ${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
     } else {
-      return 'Just now';
+      return 'Justo ahora';
     }
   }
 }

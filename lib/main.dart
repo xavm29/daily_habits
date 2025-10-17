@@ -15,6 +15,7 @@ import 'services/crashlytics_service.dart';
 import 'services/analytics_service.dart';
 import 'services/sound_service.dart';
 import 'services/vibration_service.dart';
+import 'services/challenge_service.dart';
 import 'utils/date_formatter.dart';
 
 void main() async {
@@ -36,6 +37,13 @@ void main() async {
 
   // Initialize Date Formatter
   await DateFormatter.loadFormat();
+
+  // Initialize default challenges (only creates them if they don't exist)
+  try {
+    await ChallengeService.instance.initializeDefaultChallenges();
+  } catch (e) {
+    print('Error initializing default challenges: $e');
+  }
 
   runApp(const MyApp());
 }

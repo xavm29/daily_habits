@@ -32,7 +32,7 @@ class SideMenu extends StatelessWidget {
                 Icon(Icons.calendar_today, size: 48, color: Colors.white),
                 SizedBox(height: 8),
                 Text(
-                  'Daily Habits',
+                  'Hábitos Diarios',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -46,7 +46,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.bar_chart, color: AppColors.primarys),
-              title: const Text('Statistics'),
+              title: const Text('Estadísticas'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -60,7 +60,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.emoji_events, color: AppColors.primarys),
-              title: const Text('Challenges'),
+              title: const Text('Retos'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -74,7 +74,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.military_tech, color: AppColors.primarys),
-              title: const Text('Achievements'),
+              title: const Text('Logros'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -88,7 +88,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.people, color: AppColors.primarys),
-              title: const Text('Friends'),
+              title: const Text('Amigos'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -102,7 +102,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.leaderboard, color: AppColors.primarys),
-              title: const Text('Leaderboard'),
+              title: const Text('Clasificación'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -116,7 +116,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.card_giftcard, color: AppColors.primarys),
-              title: const Text('Rewards'),
+              title: const Text('Recompensas'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -130,7 +130,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.notifications_active, color: AppColors.primarys),
-              title: const Text('Reminders'),
+              title: const Text('Recordatorios'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -144,7 +144,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.settings, color: AppColors.primarys),
-              title: const Text('Settings'),
+              title: const Text('Configuración'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -158,7 +158,7 @@ class SideMenu extends StatelessWidget {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.person, color: AppColors.primarys),
-              title: const Text('Profile'),
+              title: const Text('Perfil'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(

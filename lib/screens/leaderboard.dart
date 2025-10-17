@@ -34,7 +34,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Leaderboards'),
+        title: const Text('Clasificación'),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
         bottom: TabBar(
@@ -43,8 +43,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           labelColor: Colors.white,
           tabs: const [
             Tab(text: 'XP', icon: Icon(Icons.star)),
-            Tab(text: 'Streaks', icon: Icon(Icons.local_fire_department)),
-            Tab(text: 'This Week', icon: Icon(Icons.calendar_today)),
+            Tab(text: 'Rachas', icon: Icon(Icons.local_fire_department)),
+            Tab(text: 'Esta Semana', icon: Icon(Icons.calendar_today)),
           ],
         ),
       ),
@@ -68,7 +68,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptyState('No rankings yet', Icons.star_outline);
+          return _buildEmptyState('Sin clasificaciones aún', Icons.star_outline);
         }
 
         final leaderboard = snapshot.data!;
@@ -82,10 +82,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
 
             return _buildLeaderboardCard(
               rank: rank,
-              userName: entry['userName'] ?? 'User',
+              userName: entry['userName'] ?? 'Usuario',
               userPhoto: entry['userPhoto'] ?? '',
               value: '${entry['xp']} XP',
-              subtitle: 'Level ${entry['level']}',
+              subtitle: 'Nivel ${entry['level']}',
               isCurrentUser: isCurrentUser,
               color: _getRankColor(rank),
             );
@@ -104,7 +104,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptyState('No streaks yet', Icons.local_fire_department);
+          return _buildEmptyState('Sin rachas aún', Icons.local_fire_department);
         }
 
         final leaderboard = snapshot.data!;
@@ -118,10 +118,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
 
             return _buildLeaderboardCard(
               rank: rank,
-              userName: entry['userName'] ?? 'User',
+              userName: entry['userName'] ?? 'Usuario',
               userPhoto: entry['userPhoto'] ?? '',
-              value: '${entry['streak']} days',
-              subtitle: '🔥 On fire!',
+              value: '${entry['streak']} días',
+              subtitle: '🔥 ¡En racha!',
               isCurrentUser: isCurrentUser,
               color: _getRankColor(rank),
             );
@@ -140,7 +140,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptyState('No activity this week', Icons.calendar_today);
+          return _buildEmptyState('Sin actividad esta semana', Icons.calendar_today);
         }
 
         final leaderboard = snapshot.data!;
@@ -154,10 +154,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
 
             return _buildLeaderboardCard(
               rank: rank,
-              userName: entry['userName'] ?? 'User',
+              userName: entry['userName'] ?? 'Usuario',
               userPhoto: entry['userPhoto'] ?? '',
-              value: '${entry['completions']} completed',
-              subtitle: 'This week',
+              value: '${entry['completions']} completados',
+              subtitle: 'Esta semana',
               isCurrentUser: isCurrentUser,
               color: _getRankColor(rank),
             );
@@ -220,7 +220,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
-                  'YOU',
+                  'TÚ',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 10,
@@ -296,7 +296,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           ),
           const SizedBox(height: 8),
           const Text(
-            'Complete habits to see rankings!',
+            '¡Completa hábitos para ver clasificaciones!',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],

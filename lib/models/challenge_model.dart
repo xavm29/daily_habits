@@ -11,6 +11,9 @@ class Challenge {
   late String createdBy;
   late String category;
   late int targetCount;
+  late bool isActive; // Si el reto está activo globalmente
+  late String? linkedHabitId; // ID del hábito vinculado (opcional)
+  late String habitCategory; // Categoría de hábito requerida (si no hay uno específico)
 
   Challenge({
     required this.title,
@@ -22,6 +25,9 @@ class Challenge {
     required this.createdBy,
     required this.category,
     required this.targetCount,
+    this.isActive = true,
+    this.linkedHabitId,
+    this.habitCategory = 'any',
   });
 
   Challenge.fromJson(Map<String, dynamic> json) {
@@ -34,6 +40,9 @@ class Challenge {
     createdBy = json['createdBy'] ?? '';
     category = json['category'] ?? 'General';
     targetCount = json['targetCount'] ?? 7;
+    isActive = json['isActive'] ?? true;
+    linkedHabitId = json['linkedHabitId'];
+    habitCategory = json['habitCategory'] ?? 'any';
   }
 
   Map<String, dynamic> toJson() {
@@ -47,12 +56,15 @@ class Challenge {
       'createdBy': createdBy,
       'category': category,
       'targetCount': targetCount,
+      'isActive': isActive,
+      'linkedHabitId': linkedHabitId,
+      'habitCategory': habitCategory,
     };
   }
 
-  bool isActive() {
+  bool isActiveNow() {
     DateTime now = DateTime.now();
-    return now.isAfter(startDate) && now.isBefore(endDate);
+    return isActive && now.isAfter(startDate) && now.isBefore(endDate);
   }
 
   int getDaysRemaining() {

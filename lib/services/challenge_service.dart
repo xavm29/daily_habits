@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/challenge_model.dart';
+import '../models/challenge_progress_model.dart';
+import '../models/goals_model.dart';
 
 class ChallengeService {
   static final ChallengeService instance = ChallengeService._internal();
@@ -15,7 +17,25 @@ class ChallengeService {
   Stream<List<Challenge>> getActiveChallenges() {
     return _firestore
         .collection('challenges')
+        .where('isActive', isEqualTo: true)
         .where('endDate', isGreaterThan: DateTime.now())
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final challenge = Challenge.fromJson(doc.data());
+        challenge.id = doc.id;
+        return challenge;
+      }).toList();
+    });
+  }
+
+  // Get challenges that the user has joined
+  Stream<List<Challenge>> getUserChallenges() {
+    if (currentUserId == null) return Stream.value([]);
+
+    return _firestore
+        .collection('challenges')
+        .where('participants', arrayContains: currentUserId)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -30,18 +50,89 @@ class ChallengeService {
   Future<void> joinChallenge(String challengeId) async {
     if (currentUserId == null) return;
 
+    // Get challenge details
+    final challengeDoc = await _firestore.collection('challenges').doc(challengeId).get();
+    if (!challengeDoc.exists) return;
+
+    final challenge = Challenge.fromJson(challengeDoc.data()!);
+    challenge.id = challengeDoc.id;
+
+    // Add user to participants
     await _firestore.collection('challenges').doc(challengeId).update({
       'participants': FieldValue.arrayUnion([currentUserId]),
     });
+
+    // Create progress tracking document
+    final progress = ChallengeProgress(
+      challengeId: challengeId,
+      userId: currentUserId!,
+    );
+
+    await _firestore
+        .collection('challengeProgress')
+        .doc('${challengeId}_$currentUserId')
+        .set(progress.toJson());
+
+    // Create daily goals/tasks for the challenge
+    await _createChallengeGoals(challenge);
+  }
+
+  // Create daily goals for a challenge
+  Future<void> _createChallengeGoals(Challenge challenge) async {
+    if (currentUserId == null) return;
+
+    final now = DateTime.now();
+    final startDate = challenge.startDate.isAfter(now) ? challenge.startDate : now;
+
+    // Create one daily recurring goal for the challenge
+    final goal = Goal(
+      '${challenge.title}',
+      challenge.habitCategory,
+      Goal.kDaily, // Daily
+      [], // All days
+      challenge.endDate,
+      DateTime(now.year, now.month, now.day, 9, 0), // 9 AM reminder
+      goalType: Goal.kTypeCheckbox,
+    );
+
+    await _firestore
+        .collection('users')
+        .doc(currentUserId)
+        .collection('goals')
+        .add(goal.toJson());
   }
 
   // Leave a challenge
   Future<void> leaveChallenge(String challengeId) async {
     if (currentUserId == null) return;
 
+    // Get challenge details to find and delete the goal
+    final challengeDoc = await _firestore.collection('challenges').doc(challengeId).get();
+    if (challengeDoc.exists) {
+      final challenge = Challenge.fromJson(challengeDoc.data()!);
+
+      // Delete the goal associated with this challenge
+      final goalsSnapshot = await _firestore
+          .collection('users')
+          .doc(currentUserId)
+          .collection('goals')
+          .where('title', isEqualTo: challenge.title)
+          .get();
+
+      for (var doc in goalsSnapshot.docs) {
+        await doc.reference.delete();
+      }
+    }
+
     await _firestore.collection('challenges').doc(challengeId).update({
       'participants': FieldValue.arrayRemove([currentUserId]),
     });
+
+    // Delete progress tracking document
+    await _firestore
+        .collection('challengeProgress')
+        .doc('${challengeId}_$currentUserId')
+        .delete();
   }
 
   // Create a new challenge
@@ -53,55 +144,77 @@ class ChallengeService {
   }
 
   // Get user's progress in a challenge
-  Future<int> getUserProgressInChallenge(String challengeId) async {
-    if (currentUserId == null) return 0;
+  Stream<ChallengeProgress?> getUserProgress(String challengeId) {
+    if (currentUserId == null) return Stream.value(null);
 
-    final snapshot = await _firestore
-        .collection('challenges')
-        .doc(challengeId)
-        .collection('progress')
-        .doc(currentUserId)
-        .get();
-
-    if (!snapshot.exists) return 0;
-    return snapshot.data()?['completedCount'] ?? 0;
+    return _firestore
+        .collection('challengeProgress')
+        .doc('${challengeId}_$currentUserId')
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) return null;
+      final progress = ChallengeProgress.fromJson(snapshot.data()!);
+      progress.id = snapshot.id;
+      return progress;
+    });
   }
 
-  // Update user progress in a challenge
-  Future<void> updateProgress(String challengeId, int completedCount) async {
+  // Mark today as completed for a challenge
+  Future<void> markTodayCompleted(String challengeId) async {
     if (currentUserId == null) return;
 
-    await _firestore
-        .collection('challenges')
-        .doc(challengeId)
-        .collection('progress')
-        .doc(currentUserId)
-        .set({
-      'completedCount': completedCount,
-      'lastUpdated': DateTime.now(),
-    }, SetOptions(merge: true));
+    final docRef = _firestore
+        .collection('challengeProgress')
+        .doc('${challengeId}_$currentUserId');
+
+    final snapshot = await docRef.get();
+    if (!snapshot.exists) return;
+
+    final progress = ChallengeProgress.fromJson(snapshot.data()!);
+
+    // Only mark if not already completed today
+    if (!progress.hasCompletedToday()) {
+      progress.markTodayAsCompleted();
+      await docRef.update(progress.toJson());
+    }
+  }
+
+  // Check if user has completed today
+  Future<bool> hasCompletedToday(String challengeId) async {
+    if (currentUserId == null) return false;
+
+    final snapshot = await _firestore
+        .collection('challengeProgress')
+        .doc('${challengeId}_$currentUserId')
+        .get();
+
+    if (!snapshot.exists) return false;
+
+    final progress = ChallengeProgress.fromJson(snapshot.data()!);
+    return progress.hasCompletedToday();
   }
 
   // Get leaderboard for a challenge
   Future<List<Map<String, dynamic>>> getLeaderboard(String challengeId) async {
     final snapshot = await _firestore
-        .collection('challenges')
-        .doc(challengeId)
-        .collection('progress')
-        .orderBy('completedCount', descending: true)
+        .collection('challengeProgress')
+        .where('challengeId', isEqualTo: challengeId)
+        .orderBy('completedDays', descending: true)
         .limit(10)
         .get();
 
     List<Map<String, dynamic>> leaderboard = [];
     for (var doc in snapshot.docs) {
-      final data = doc.data();
+      final progress = ChallengeProgress.fromJson(doc.data());
+
       // Fetch user info
-      final userSnapshot = await _firestore.collection('users').doc(doc.id).get();
+      final userSnapshot = await _firestore.collection('users').doc(progress.userId).get();
       final userData = userSnapshot.data();
 
       leaderboard.add({
-        'userId': doc.id,
-        'completedCount': data['completedCount'] ?? 0,
+        'userId': progress.userId,
+        'completedDays': progress.completedDays,
+        'currentStreak': progress.currentStreak,
         'userName': userData?['userName'] ?? 'User',
         'userPhoto': userData?['userPhoto'] ?? '',
       });
@@ -110,17 +223,61 @@ class ChallengeService {
     return leaderboard;
   }
 
+  // Auto-update challenges when a user completes habits
+  Future<void> checkAndUpdateChallengesOnHabitCompletion() async {
+    if (currentUserId == null) return;
+
+    // Get all challenges the user is participating in
+    final challengesSnapshot = await _firestore
+        .collection('challenges')
+        .where('participants', arrayContains: currentUserId)
+        .where('isActive', isEqualTo: true)
+        .get();
+
+    for (var doc in challengesSnapshot.docs) {
+      final challengeId = doc.id;
+
+      // Check if today has already been marked as completed
+      final hasCompleted = await hasCompletedToday(challengeId);
+
+      if (!hasCompleted) {
+        // Mark today as completed for this challenge
+        await markTodayCompleted(challengeId);
+      }
+    }
+  }
+
+  // Force recreate all default challenges (for debugging)
+  Future<void> recreateDefaultChallenges() async {
+    // Delete all existing system challenges
+    final snapshot = await _firestore
+        .collection('challenges')
+        .where('createdBy', isEqualTo: 'system')
+        .get();
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Create new ones
+    await _createDefaultChallenges();
+  }
+
   // Initialize default challenges
   Future<void> initializeDefaultChallenges() async {
-    // Check if challenges already exist
-    final snapshot = await _firestore.collection('challenges').limit(1).get();
-    if (snapshot.docs.isNotEmpty) return; // Challenges already exist
+    // Check if we already have 5 or more challenges
+    final snapshot = await _firestore.collection('challenges').get();
+    if (snapshot.docs.length >= 5) return; // Challenges already exist
 
+    await _createDefaultChallenges();
+  }
+
+  Future<void> _createDefaultChallenges() async {
     final now = DateTime.now();
     final challenges = [
       Challenge(
-        title: '7-Day Consistency Challenge',
-        description: 'Complete at least one habit every day for 7 days straight',
+        title: 'Reto de Consistencia 7 Días',
+        description: 'Completa al menos un hábito cada día durante 7 días seguidos',
         durationDays: 7,
         startDate: now,
         endDate: now.add(const Duration(days: 7)),
@@ -128,10 +285,12 @@ class ChallengeService {
         createdBy: 'system',
         category: 'Consistency',
         targetCount: 7,
+        isActive: true,
+        habitCategory: 'any',
       ),
       Challenge(
-        title: '30-Day Fitness Challenge',
-        description: 'Complete fitness-related habits for 30 days',
+        title: 'Reto de Fitness 30 Días',
+        description: 'Completa hábitos relacionados con el ejercicio durante 30 días',
         durationDays: 30,
         startDate: now,
         endDate: now.add(const Duration(days: 30)),
@@ -139,10 +298,12 @@ class ChallengeService {
         createdBy: 'system',
         category: 'Health',
         targetCount: 30,
+        isActive: true,
+        habitCategory: 'fitness',
       ),
       Challenge(
-        title: 'Morning Routine Master',
-        description: 'Complete your morning routine before 9 AM for 14 days',
+        title: 'Maestro de la Rutina Matutina',
+        description: 'Completa tu rutina matutina antes de las 9 AM durante 14 días',
         durationDays: 14,
         startDate: now,
         endDate: now.add(const Duration(days: 14)),
@@ -150,6 +311,34 @@ class ChallengeService {
         createdBy: 'system',
         category: 'Productivity',
         targetCount: 14,
+        isActive: true,
+        habitCategory: 'morning',
+      ),
+      Challenge(
+        title: 'Reto de Lectura 21 Días',
+        description: 'Lee al menos 15 minutos cada día durante 21 días',
+        durationDays: 21,
+        startDate: now,
+        endDate: now.add(const Duration(days: 21)),
+        participants: [],
+        createdBy: 'system',
+        category: 'Productivity',
+        targetCount: 21,
+        isActive: true,
+        habitCategory: 'reading',
+      ),
+      Challenge(
+        title: 'Reto de Hidratación 14 Días',
+        description: 'Bebe al menos 8 vasos de agua cada día durante 14 días',
+        durationDays: 14,
+        startDate: now,
+        endDate: now.add(const Duration(days: 14)),
+        participants: [],
+        createdBy: 'system',
+        category: 'Health',
+        targetCount: 14,
+        isActive: true,
+        habitCategory: 'health',
       ),
     ];
 

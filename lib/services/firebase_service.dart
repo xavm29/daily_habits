@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daily_habits/models/goals_model.dart';
+import 'package:daily_habits/services/challenge_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -102,6 +103,14 @@ class FirebaseService {
         .doc(user?.uid)
         .collection('completedGoals')
         .add(task.toJson());
+
+    // Actualizar progreso de retos cuando se completa un objetivo
+    try {
+      await ChallengeService.instance.checkAndUpdateChallengesOnHabitCompletion();
+    } catch (e) {
+      // Ignorar errores para no afectar el flujo principal
+      print('Error al actualizar progreso del reto: $e');
+    }
   }
 
   Future<void> clearAllUserData(String userId) async {

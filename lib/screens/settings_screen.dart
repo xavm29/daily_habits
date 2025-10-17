@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Configuración'),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
       ),
@@ -68,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Appearance Section
-          _buildSectionHeader('Appearance'),
+          _buildSectionHeader('Apariencia'),
           Card(
             elevation: 2,
             child: Column(
@@ -78,8 +78,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                     color: AppColors.primarys,
                   ),
-                  title: const Text('Dark Mode'),
-                  subtitle: const Text('Switch between light and dark theme'),
+                  title: const Text('Modo Oscuro'),
+                  subtitle: const Text('Cambiar entre tema claro y oscuro'),
                   value: themeProvider.isDarkMode,
                   onChanged: (value) {
                     themeProvider.toggleTheme();
@@ -90,8 +90,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.view_list, color: AppColors.primarys),
-                  title: const Text('Show Completed Habits'),
-                  subtitle: const Text('Display completed habits in the list'),
+                  title: const Text('Mostrar Hábitos Completados'),
+                  subtitle: const Text('Mostrar hábitos completados en la lista'),
                   value: _showCompletedHabits,
                   onChanged: (value) {
                     setState(() {
@@ -104,8 +104,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.bar_chart, color: AppColors.primarys),
-                  title: const Text('Show Progress Bars'),
-                  subtitle: const Text('Display progress indicators'),
+                  title: const Text('Mostrar Barras de Progreso'),
+                  subtitle: const Text('Mostrar indicadores de progreso'),
                   value: _showProgressBar,
                   onChanged: (value) {
                     setState(() {
@@ -121,15 +121,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Feedback Section
-          _buildSectionHeader('Feedback'),
+          _buildSectionHeader('Retroalimentación'),
           Card(
             elevation: 2,
             child: Column(
               children: [
                 SwitchListTile(
                   secondary: const Icon(Icons.volume_up, color: AppColors.primarys),
-                  title: const Text('Sound Effects'),
-                  subtitle: const Text('Play sounds when completing habits'),
+                  title: const Text('Efectos de Sonido'),
+                  subtitle: const Text('Reproducir sonidos al completar hábitos'),
                   value: _enableSound,
                   onChanged: (value) async {
                     setState(() {
@@ -142,8 +142,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.vibration, color: AppColors.primarys),
-                  title: const Text('Vibration'),
-                  subtitle: const Text('Vibrate on habit completion'),
+                  title: const Text('Vibración'),
+                  subtitle: const Text('Vibrar al completar hábitos'),
                   value: _enableVibration,
                   onChanged: (value) async {
                     setState(() {
@@ -159,22 +159,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Calendar Section
-          _buildSectionHeader('Calendar'),
+          _buildSectionHeader('Calendario'),
           Card(
             elevation: 2,
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.calendar_today, color: AppColors.primarys),
-                  title: const Text('Week Starts On'),
-                  subtitle: Text(_weekStartDay == 1 ? 'Monday' : 'Sunday'),
+                  title: const Text('La Semana Comienza en'),
+                  subtitle: Text(_weekStartDay == 1 ? 'Lunes' : 'Domingo'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => _showWeekStartDialog(),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.date_range, color: AppColors.primarys),
-                  title: const Text('Date Format'),
+                  title: const Text('Formato de Fecha'),
                   subtitle: Text(_dateFormat),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => _showDateFormatDialog(),
@@ -185,13 +185,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Data & Privacy
-          _buildSectionHeader('Data & Privacy'),
+          _buildSectionHeader('Datos y Privacidad'),
           Card(
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text('Clear All Data', style: TextStyle(color: Colors.red)),
-              subtitle: const Text('This cannot be undone'),
+              title: const Text('Borrar Todos los Datos', style: TextStyle(color: Colors.red)),
+              subtitle: const Text('Esta acción no se puede deshacer'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () => _showClearDataDialog(),
             ),
@@ -219,12 +219,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Week Starts On'),
+        title: const Text('La Semana Comienza en'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<int>(
-              title: const Text('Sunday'),
+              title: const Text('Domingo'),
               value: 0,
               groupValue: _weekStartDay,
               onChanged: (value) {
@@ -236,7 +236,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             RadioListTile<int>(
-              title: const Text('Monday'),
+              title: const Text('Lunes'),
               value: 1,
               groupValue: _weekStartDay,
               onChanged: (value) {
@@ -257,7 +257,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Date Format'),
+        title: const Text('Formato de Fecha'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -289,14 +289,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear All Data?'),
+        title: const Text('¿Borrar Todos los Datos?'),
         content: const Text(
-          'This will delete all your habits, progress, and settings. This action cannot be undone.',
+          'Esto eliminará todos tus hábitos, progreso y configuraciones. Esta acción no se puede deshacer.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -347,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Data cleared successfully'),
+                      content: Text('Datos borrados exitosamente'),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -360,7 +360,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error clearing data: $e'),
+                      content: Text('Error al borrar datos: $e'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -368,7 +368,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Clear All'),
+            child: const Text('Borrar Todo'),
           ),
         ],
       ),
