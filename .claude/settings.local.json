@@ -15,7 +15,8 @@
       "Bash(findstr:*)",
       "Bash(firebase deploy --only firestore:rules)",
       "Bash(firebase projects:list)",
-      "Bash(firebase use daily-habits-32eac)"
+      "Bash(firebase use daily-habits-32eac)",
+      "Bash(clip)"
     ],
     "deny": [],
     "ask": []
