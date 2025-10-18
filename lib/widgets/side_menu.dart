@@ -6,6 +6,7 @@ import 'package:daily_habits/screens/leaderboard.dart';
 import 'package:daily_habits/screens/rewards.dart';
 import 'package:daily_habits/screens/reminder_settings.dart';
 import 'package:daily_habits/screens/settings_screen.dart';
+import 'package:daily_habits/screens/manage_goals_screen.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -54,6 +55,20 @@ class SideMenu extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Statistics()),
+                );
+              },
+            ),
+          ),
+          Card(
+            elevation: 2,
+            child: ListTile(
+              leading: const Icon(Icons.flag, color: AppColors.primarys),
+              title: Text(l10n.manageGoals),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ManageGoalsScreen()),
                 );
               },
             ),

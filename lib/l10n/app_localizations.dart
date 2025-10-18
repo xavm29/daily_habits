@@ -90,6 +90,7 @@ abstract class AppLocalizations {
   String get reminder;
   String get noReminder;
   String get setReminder;
+  String get goalUpdatedSuccessfully;
 
   // Challenges
   String get challenges;
@@ -423,6 +424,17 @@ abstract class AppLocalizations {
   String get challenge21DayReadingDesc;
   String get challenge14DayHydration;
   String get challenge14DayHydrationDesc;
+
+  // Manage Goals Screen
+  String get manageGoals;
+  String get myGoals;
+  String get noGoalsYet;
+  String get createYourFirstGoal;
+  String get editGoalTitle;
+  String get deleteGoalConfirm;
+  String get goalDeleted;
+  String get goalUpdated;
+  String get expiredGoals;
 }
 
 class _AppLocalizationsDelegate

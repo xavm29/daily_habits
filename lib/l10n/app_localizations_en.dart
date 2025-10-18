@@ -144,6 +144,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noReminder => 'No Reminder';
   @override
   String get setReminder => 'Set Reminder';
+  @override
+  String get goalUpdatedSuccessfully => 'Goal updated successfully! 🎯';
 
   // Challenges
   @override
@@ -764,4 +766,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challenge14DayHydration => '14-Day Hydration Challenge';
   @override
   String get challenge14DayHydrationDesc => 'Drink at least 8 glasses of water each day for 14 days';
+
+  // Manage Goals Screen
+  @override
+  String get manageGoals => 'Manage Goals';
+  @override
+  String get myGoals => 'My Goals';
+  @override
+  String get noGoalsYet => 'No goals yet';
+  @override
+  String get createYourFirstGoal => 'Create your first goal to get started';
+  @override
+  String get editGoalTitle => 'Edit Goal';
+  @override
+  String get deleteGoalConfirm => 'Are you sure you want to delete this goal?';
+  @override
+  String get goalDeleted => 'Goal deleted';
+  @override
+  String get goalUpdated => 'Goal updated';
+  @override
+  String get expiredGoals => 'Expired Goals';
 }

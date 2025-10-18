@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/goals_model.dart';
 import '../styles/styles.dart';
 
 class CreateGoals extends StatefulWidget {
-  const CreateGoals({Key? key}) : super(key: key);
+  final String? goalId;
+  final Goal? existingGoal;
+
+  const CreateGoals({Key? key, this.goalId, this.existingGoal}) : super(key: key);
 
   @override
   State<CreateGoals> createState() => _CreateGoalsState();
@@ -48,14 +52,34 @@ class _CreateGoalsState extends State<CreateGoals> {
     numberTextController = TextEditingController();
     targetValueController = TextEditingController();
     unitController = TextEditingController();
+
+    // Load existing goal data if editing
+    if (widget.existingGoal != null) {
+      final goal = widget.existingGoal!;
+      goalTextController.text = goal.title;
+      endDate = goal.endDate;
+      hourReminder = goal.hourReminder;
+      periodic = goal.periodic;
+      goalType = goal.goalType;
+      weekDays.addAll(goal.weekDays);
+
+      if (goal.targetValue != null) {
+        targetValueController.text = goal.targetValue.toString();
+      }
+      if (goal.unit != null) {
+        unitController.text = goal.unit!;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
-          title: const Text('Crear Objetivos'),
+          title: Text(widget.goalId != null ? l10n.editGoal : l10n.createGoal),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -72,12 +96,12 @@ class _CreateGoalsState extends State<CreateGoals> {
                     alignment: Alignment.bottomCenter,
                     child: Image.asset("assets/images/person.png"),
                   )),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
                     Text(
-                      "Establece tus Objetivos",
+                      l10n.setYourGoals,
                       style: TextStyles.title,
                     ),
                   ],
@@ -90,11 +114,11 @@ class _CreateGoalsState extends State<CreateGoals> {
                   children: [
                     Flexible(
                       child: TextField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
                           filled: true,
                           fillColor: Colors.white,
-                          labelText: 'Objetivo',
+                          labelText: l10n.goal,
                         ),
                         controller: goalTextController,
                       ),
@@ -102,10 +126,10 @@ class _CreateGoalsState extends State<CreateGoals> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Tipo de Objetivo",
+                  l10n.goalType,
                   style: TextStyles.title,
                 ),
               ),
@@ -123,7 +147,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: goalType == Goal.kTypeCheckbox
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Checkbox")),
+                        child: Text(l10n.checkbox)),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -133,7 +157,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: goalType == Goal.kTypeQuantity
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Cantidad")),
+                        child: Text(l10n.quantity)),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -143,7 +167,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: goalType == Goal.kTypeDuration
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Duración")),
+                        child: Text(l10n.duration)),
                   ],
                 ),
               ),
@@ -155,11 +179,11 @@ class _CreateGoalsState extends State<CreateGoals> {
                       Expanded(
                         flex: 2,
                         child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
-                            labelText: 'Objetivo',
+                            labelText: l10n.targetValue,
                           ),
                           controller: targetValueController,
                           keyboardType: TextInputType.number,
@@ -173,7 +197,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                             border: const OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
-                            labelText: goalType == Goal.kTypeDuration ? 'Unidad (min)' : 'Unidad',
+                            labelText: goalType == Goal.kTypeDuration ? l10n.unitMin : l10n.unit,
                           ),
                           controller: unitController,
                         ),
@@ -181,10 +205,10 @@ class _CreateGoalsState extends State<CreateGoals> {
                     ],
                   ),
                 ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Frecuencia",
+                  l10n.frequency,
                   style: TextStyles.title,
                 ),
               ),
@@ -202,7 +226,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: periodic == Goal.kDaily
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Diario")),
+                        child: Text(l10n.daily)),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -212,7 +236,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: periodic == Goal.kWeekly
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Semanal")),
+                        child: Text(l10n.weekly)),
                     ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -222,15 +246,15 @@ class _CreateGoalsState extends State<CreateGoals> {
                         style: periodic == Goal.kMonthly
                             ? styleSelected
                             : styleUnselected,
-                        child: const Text("Mensual"))
+                        child: Text(l10n.monthly))
                   ],
                 ),
               ),
               if (periodic == Goal.kWeekly)
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Repetir cada día",
+                    l10n.repeatEveryDay,
                     style: TextStyles.title,
                   ),
                 ),
@@ -310,7 +334,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                     },
                     title: (hourReminder != null)
                         ? Text(DateFormat('HH:mm').format(hourReminder!))
-                        : const Text('Selecciona la hora del recordatorio'),
+                        : Text(l10n.selectYourTimeReminder),
                   ),
                 ),
               ),
@@ -336,7 +360,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                     },
                     title: (endDate != null)
                         ? Text(DateFormat('yyyy-MM-dd').format(endDate!))
-                        : const Text('Selecciona la fecha de finalización'),
+                        : Text(l10n.selectYourEndDate),
                     leading: const Icon(Icons.calendar_month),
                   ),
                 ),
@@ -348,19 +372,19 @@ class _CreateGoalsState extends State<CreateGoals> {
                     onPressed: () async {
                       if (goalTextController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Por favor ingresa un objetivo')),
+                          SnackBar(content: Text(l10n.pleaseEnterGoal)),
                         );
                         return;
                       }
                       if (endDate == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Por favor selecciona una fecha de finalización')),
+                          SnackBar(content: Text(l10n.pleaseSelectEndDate)),
                         );
                         return;
                       }
                       if (hourReminder == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Por favor selecciona una hora de recordatorio')),
+                          SnackBar(content: Text(l10n.pleaseSelectReminderTime)),
                         );
                         return;
                       }
@@ -370,7 +394,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                       if (goalType != Goal.kTypeCheckbox) {
                         if (targetValueController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Por favor ingresa un valor objetivo')),
+                            SnackBar(content: Text(l10n.pleaseEnterTargetValue)),
                           );
                           return;
                         }
@@ -389,7 +413,12 @@ class _CreateGoalsState extends State<CreateGoals> {
                           targetValue: targetValue,
                           unit: unit);
 
-                      await FirebaseService.instance.saveGoal(goal);
+                      // Check if we're editing or creating
+                      if (widget.goalId != null) {
+                        await FirebaseService.instance.updateGoal(widget.goalId!, goal);
+                      } else {
+                        await FirebaseService.instance.saveGoal(goal);
+                      }
 
                       // Schedule notification for this goal
                       final notificationService = NotificationService();
@@ -406,8 +435,8 @@ class _CreateGoalsState extends State<CreateGoals> {
 
                       // Show success message
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('¡Objetivo creado con recordatorio! 🎯'),
+                        SnackBar(
+                          content: Text(widget.goalId != null ? l10n.goalUpdatedSuccessfully : l10n.goalCreatedWithReminder),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -419,7 +448,7 @@ class _CreateGoalsState extends State<CreateGoals> {
                         shape: const StadiumBorder(),
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black),
-                    label: const Text("Guardar")),
+                    label: Text(l10n.save)),
               )
             ], // prueba de deveolop
           ),

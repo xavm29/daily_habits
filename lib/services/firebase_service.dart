@@ -164,4 +164,19 @@ class FirebaseService {
       await doc.reference.delete();
     }
   }
+
+  // Delete a specific goal
+  Future<void> deleteGoal(String goalId) async {
+    if (user == null) return;
+
+    await _db
+        .collection('users')
+        .doc(user!.uid)
+        .collection('goals')
+        .doc(goalId)
+        .delete();
+
+    // Also delete any related notifications
+    // Note: NotificationService would handle this
+  }
 }

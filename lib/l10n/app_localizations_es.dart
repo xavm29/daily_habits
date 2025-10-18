@@ -144,6 +144,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noReminder => 'Sin recordatorio';
   @override
   String get setReminder => 'Establecer recordatorio';
+  @override
+  String get goalUpdatedSuccessfully => '¡Objetivo actualizado exitosamente! 🎯';
 
   // Challenges
   @override
@@ -764,4 +766,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get challenge14DayHydration => 'Reto de Hidratación 14 Días';
   @override
   String get challenge14DayHydrationDesc => 'Bebe al menos 8 vasos de agua cada día durante 14 días';
+
+  // Manage Goals Screen
+  @override
+  String get manageGoals => 'Gestionar Objetivos';
+  @override
+  String get myGoals => 'Mis Objetivos';
+  @override
+  String get noGoalsYet => 'Aún no tienes objetivos';
+  @override
+  String get createYourFirstGoal => 'Crea tu primer objetivo para comenzar';
+  @override
+  String get editGoalTitle => 'Editar Objetivo';
+  @override
+  String get deleteGoalConfirm => '¿Estás seguro de que quieres eliminar este objetivo?';
+  @override
+  String get goalDeleted => 'Objetivo eliminado';
+  @override
+  String get goalUpdated => 'Objetivo actualizado';
+  @override
+  String get expiredGoals => 'Objetivos Vencidos';
 }
