@@ -55,28 +55,55 @@ class Goal {
 
   bool isVisible(DateTime dateTime) {
     if (dateTime.isAfter(endDate)) return false;
-    if (periodic == Goal.kWeekly && !weekDays.contains(dateTime.weekday)) {
-      return false;
+
+    // For weekly goals, check if the current weekday is in the list
+    if (periodic == Goal.kWeekly) {
+      // If weekDays is empty, show on all days (backwards compatibility)
+      if (weekDays.isEmpty) return true;
+      // Otherwise, only show on selected days
+      if (!weekDays.contains(dateTime.weekday)) return false;
     }
+
     return true;
   }
 
   bool isCompletedForDate(DateTime dateTime, UserData userData) {
     bool completed = false;
+
+    // Normalize the input date to midnight for comparison
+    final checkDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
     for (var task in userData.tasks) {
       if (task.goalId == id) {
-        Duration difference = task.completedDateTime.difference(dateTime);
-        int days = difference.inDays.abs();
-        if (periodic == Goal.kDaily && days < 1) {
-          completed = true;
-        }
-        if (periodic == Goal.kWeekly &&
-            days < 7 &&
-            weekDays.contains(task.completedDateTime.weekday)) {
-          completed = true;
-        }
-        if (periodic == Goal.kMonthly && days < 30) {
-          completed = true;
+        // Normalize the task completion date to midnight
+        final taskDate = DateTime(
+          task.completedDateTime.year,
+          task.completedDateTime.month,
+          task.completedDateTime.day,
+        );
+
+        if (periodic == Goal.kDaily) {
+          // For daily goals, check if it's the same day
+          if (taskDate == checkDate) {
+            completed = true;
+            break;
+          }
+        } else if (periodic == Goal.kWeekly) {
+          // For weekly goals, check same day within the same week and matching weekday
+          Duration difference = taskDate.difference(checkDate);
+          int days = difference.inDays.abs();
+          if (days < 7 && weekDays.contains(checkDate.weekday)) {
+            completed = true;
+            break;
+          }
+        } else if (periodic == Goal.kMonthly) {
+          // For monthly goals, check within the same month
+          Duration difference = taskDate.difference(checkDate);
+          int days = difference.inDays.abs();
+          if (days < 30) {
+            completed = true;
+            break;
+          }
         }
       }
     }

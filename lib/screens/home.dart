@@ -20,6 +20,7 @@ import '../services/analytics_service.dart';
 import '../services/crashlytics_service.dart';
 import '../services/sound_service.dart';
 import '../services/vibration_service.dart';
+import '../services/challenge_service.dart';
 import '../widgets/side_menu.dart';
 import '../widgets/quantitative_dialog.dart';
 import '../widgets/registration_prompt_dialog.dart';
@@ -164,6 +165,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     var task = CompletedTask(key, dateSelected);
     userData.tasks.add(task);
     await FirebaseService.instance.saveCompletedGoals(task);
+
+    // Update challenge progress if this habit is part of a challenge
+    try {
+      await ChallengeService.instance.checkAndUpdateChallengesOnHabitCompletion(
+        goalTitle: goals[key]!.title,
+        goalCategory: goals[key]!.category,
+      );
+    } catch (e, stackTrace) {
+      await CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Failed to update challenge progress');
+    }
+
     setState(() {});
   }
 
@@ -230,6 +242,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           );
           userData.tasks.add(task);
           await FirebaseService.instance.saveCompletedGoals(task);
+
+          // Update challenge progress if this habit is part of a challenge
+          try {
+            await ChallengeService.instance.checkAndUpdateChallengesOnHabitCompletion(
+              goalTitle: goals[key]!.title,
+              goalCategory: goals[key]!.category,
+            );
+          } catch (e, stackTrace) {
+            await CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Failed to update challenge progress');
+          }
+
           setState(() {});
         },
       ),
@@ -447,6 +470,37 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           Expanded(
             child: ListView(
               children: [
+                // Debug: Show info if no pending tasks
+                if (goals.isNotEmpty &&
+                    !goals.keys.any((key) =>
+                      !goals[key]!.isCompletedForDate(dateSelected, userData) &&
+                      goals[key]!.isVisible(dateSelected)))
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          l10n.noGoalsForToday,
+                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Total hábitos: ${goals.length}',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (goals.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'No hay hábitos creados',
+                      style: TextStyle(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 // Pending habits
                 for (var key in goals.keys)
                   if (!goals[key]!.isCompletedForDate(dateSelected, userData) &&

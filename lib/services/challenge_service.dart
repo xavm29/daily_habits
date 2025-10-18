@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/challenge_model.dart';
 import '../models/challenge_progress_model.dart';
 import '../models/goals_model.dart';
+import 'notification_service.dart';
 
 class ChallengeService {
   static final ChallengeService instance = ChallengeService._internal();
@@ -18,14 +19,15 @@ class ChallengeService {
     return _firestore
         .collection('challenges')
         .where('isActive', isEqualTo: true)
-        .where('endDate', isGreaterThan: DateTime.now())
         .snapshots()
         .map((snapshot) {
+      // Filter out expired challenges in memory
+      final now = DateTime.now();
       return snapshot.docs.map((doc) {
         final challenge = Challenge.fromJson(doc.data());
         challenge.id = doc.id;
         return challenge;
-      }).toList();
+      }).where((challenge) => challenge.endDate.isAfter(now)).toList();
     });
   }
 
@@ -89,17 +91,28 @@ class ChallengeService {
       '${challenge.title}',
       challenge.habitCategory,
       Goal.kDaily, // Daily
-      [], // All days
+      [1, 2, 3, 4, 5, 6, 7], // All days of the week (Mon-Sun)
       challenge.endDate,
       DateTime(now.year, now.month, now.day, 9, 0), // 9 AM reminder
       goalType: Goal.kTypeCheckbox,
     );
 
-    await _firestore
+    final docRef = await _firestore
         .collection('users')
         .doc(currentUserId)
         .collection('goals')
         .add(goal.toJson());
+
+    // Schedule notification for this goal
+    final notificationService = NotificationService();
+    await notificationService.scheduleDailyNotification(
+      id: docRef.id.hashCode, // Use document ID hash as notification ID
+      title: 'Recordatorio: ${challenge.title}',
+      body: '¡No olvides completar tu reto de hoy!',
+      hour: 9,
+      minute: 0,
+      payload: challenge.title,
+    );
   }
 
   // Leave a challenge
@@ -199,8 +212,6 @@ class ChallengeService {
     final snapshot = await _firestore
         .collection('challengeProgress')
         .where('challengeId', isEqualTo: challengeId)
-        .orderBy('completedDays', descending: true)
-        .limit(10)
         .get();
 
     List<Map<String, dynamic>> leaderboard = [];
@@ -220,22 +231,43 @@ class ChallengeService {
       });
     }
 
-    return leaderboard;
+    // Sort in memory instead of in query
+    leaderboard.sort((a, b) => (b['completedDays'] as int).compareTo(a['completedDays'] as int));
+
+    // Return top 10
+    return leaderboard.take(10).toList();
   }
 
   // Auto-update challenges when a user completes habits
-  Future<void> checkAndUpdateChallengesOnHabitCompletion() async {
+  Future<void> checkAndUpdateChallengesOnHabitCompletion({String? goalTitle, String? goalCategory}) async {
     if (currentUserId == null) return;
 
     // Get all challenges the user is participating in
     final challengesSnapshot = await _firestore
         .collection('challenges')
         .where('participants', arrayContains: currentUserId)
-        .where('isActive', isEqualTo: true)
         .get();
 
     for (var doc in challengesSnapshot.docs) {
       final challengeId = doc.id;
+      final challenge = Challenge.fromJson(doc.data());
+
+      // Skip if not active
+      if (!challenge.isActive) continue;
+
+      // Check if the completed habit matches this challenge
+      // Match by title (exact) or category
+      bool isMatchingHabit = false;
+
+      if (goalTitle != null && goalTitle == challenge.title) {
+        // Direct title match (habit created from challenge)
+        isMatchingHabit = true;
+      } else if (goalCategory != null && goalCategory == challenge.habitCategory) {
+        // Category match (any habit in the same category)
+        isMatchingHabit = true;
+      }
+
+      if (!isMatchingHabit) continue;
 
       // Check if today has already been marked as completed
       final hasCompleted = await hasCompletedToday(challengeId);

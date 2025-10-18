@@ -9,7 +9,13 @@
       "Bash(flutter pub:*)",
       "Bash(dir:*)",
       "Bash(cd:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(adb logcat:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(firebase deploy --only firestore:rules)",
+      "Bash(firebase projects:list)",
+      "Bash(firebase use daily-habits-32eac)"
     ],
     "deny": [],
     "ask": []
