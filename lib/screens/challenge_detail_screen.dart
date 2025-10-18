@@ -24,10 +24,11 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text(widget.challenge.title),
+        title: Text(widget.challenge.getLocalizedTitle(l10n)),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
       ),
@@ -84,7 +85,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.challenge.description,
+              widget.challenge.getLocalizedDescription(l10n),
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[700],

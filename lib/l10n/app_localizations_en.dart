@@ -742,4 +742,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noThanks => 'No Thanks';
   @override
   String get rateNow => 'Rate Now';
+
+  // Default Challenge Titles
+  @override
+  String get challenge7DayConsistency => '7-Day Consistency Challenge';
+  @override
+  String get challenge7DayConsistencyDesc => 'Complete at least one habit each day for 7 consecutive days';
+  @override
+  String get challenge30DayFitness => '30-Day Fitness Challenge';
+  @override
+  String get challenge30DayFitnessDesc => 'Complete exercise-related habits for 30 days';
+  @override
+  String get challengeMorningRoutineMaster => 'Morning Routine Master';
+  @override
+  String get challengeMorningRoutineMasterDesc => 'Complete your morning routine before 9 AM for 14 days';
+  @override
+  String get challenge21DayReading => '21-Day Reading Challenge';
+  @override
+  String get challenge21DayReadingDesc => 'Read at least 15 minutes each day for 21 days';
+  @override
+  String get challenge14DayHydration => '14-Day Hydration Challenge';
+  @override
+  String get challenge14DayHydrationDesc => 'Drink at least 8 glasses of water each day for 14 days';
 }

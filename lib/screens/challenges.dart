@@ -231,7 +231,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                challenge.title,
+                                challenge.getLocalizedTitle(l10n),
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -239,7 +239,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                challenge.description,
+                                challenge.getLocalizedDescription(l10n),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],

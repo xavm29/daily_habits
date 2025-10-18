@@ -411,6 +411,18 @@ abstract class AppLocalizations {
   String get yourReviewHelpsUs;
   String get noThanks;
   String get rateNow;
+
+  // Default Challenge Translations
+  String get challenge7DayConsistency;
+  String get challenge7DayConsistencyDesc;
+  String get challenge30DayFitness;
+  String get challenge30DayFitnessDesc;
+  String get challengeMorningRoutineMaster;
+  String get challengeMorningRoutineMasterDesc;
+  String get challenge21DayReading;
+  String get challenge21DayReadingDesc;
+  String get challenge14DayHydration;
+  String get challenge14DayHydrationDesc;
 }
 
 class _AppLocalizationsDelegate

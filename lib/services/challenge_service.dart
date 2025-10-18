@@ -308,8 +308,10 @@ class ChallengeService {
     final now = DateTime.now();
     final challenges = [
       Challenge(
-        title: 'Reto de Consistencia 7 Días',
-        description: 'Completa al menos un hábito cada día durante 7 días seguidos',
+        title: '7-Day Consistency Challenge', // Default fallback
+        description: 'Complete at least one habit each day for 7 consecutive days',
+        titleKey: 'challenge7DayConsistency',
+        descriptionKey: 'challenge7DayConsistencyDesc',
         durationDays: 7,
         startDate: now,
         endDate: now.add(const Duration(days: 7)),
@@ -321,8 +323,10 @@ class ChallengeService {
         habitCategory: 'any',
       ),
       Challenge(
-        title: 'Reto de Fitness 30 Días',
-        description: 'Completa hábitos relacionados con el ejercicio durante 30 días',
+        title: '30-Day Fitness Challenge',
+        description: 'Complete exercise-related habits for 30 days',
+        titleKey: 'challenge30DayFitness',
+        descriptionKey: 'challenge30DayFitnessDesc',
         durationDays: 30,
         startDate: now,
         endDate: now.add(const Duration(days: 30)),
@@ -334,8 +338,10 @@ class ChallengeService {
         habitCategory: 'fitness',
       ),
       Challenge(
-        title: 'Maestro de la Rutina Matutina',
-        description: 'Completa tu rutina matutina antes de las 9 AM durante 14 días',
+        title: 'Morning Routine Master',
+        description: 'Complete your morning routine before 9 AM for 14 days',
+        titleKey: 'challengeMorningRoutineMaster',
+        descriptionKey: 'challengeMorningRoutineMasterDesc',
         durationDays: 14,
         startDate: now,
         endDate: now.add(const Duration(days: 14)),
@@ -347,8 +353,10 @@ class ChallengeService {
         habitCategory: 'morning',
       ),
       Challenge(
-        title: 'Reto de Lectura 21 Días',
-        description: 'Lee al menos 15 minutos cada día durante 21 días',
+        title: '21-Day Reading Challenge',
+        description: 'Read at least 15 minutes each day for 21 days',
+        titleKey: 'challenge21DayReading',
+        descriptionKey: 'challenge21DayReadingDesc',
         durationDays: 21,
         startDate: now,
         endDate: now.add(const Duration(days: 21)),
@@ -360,8 +368,10 @@ class ChallengeService {
         habitCategory: 'reading',
       ),
       Challenge(
-        title: 'Reto de Hidratación 14 Días',
-        description: 'Bebe al menos 8 vasos de agua cada día durante 14 días',
+        title: '14-Day Hydration Challenge',
+        description: 'Drink at least 8 glasses of water each day for 14 days',
+        titleKey: 'challenge14DayHydration',
+        descriptionKey: 'challenge14DayHydrationDesc',
         durationDays: 14,
         startDate: now,
         endDate: now.add(const Duration(days: 14)),
