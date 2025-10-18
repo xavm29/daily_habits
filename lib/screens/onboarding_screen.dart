@@ -3,6 +3,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../styles/styles.dart';
 import 'login_custom.dart';
+import '../l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -16,42 +17,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return IntroductionScreen(
       key: _introKey,
       pages: [
         PageViewModel(
-          title: "¡Bienvenido a Hábitos Diarios! 👋",
-          body: "Construye mejores hábitos y alcanza tus metas un día a la vez. ¡Rastrea tu progreso y celebra tus logros!",
+          title: l10n.welcomeToApp,
+          body: l10n.onboardingBody1,
           image: _buildImage('assets/images/icon.png'),
           decoration: _getPageDecoration(),
         ),
         PageViewModel(
-          title: "Crea tus Hábitos 📝",
-          body: "Añade hábitos personalizados con diferentes tipos: casillas simples, cantidades o seguimiento de duración. ¡Configura recordatorios y frecuencias!",
+          title: l10n.onboardingTitle1,
+          body: l10n.onboardingBody1,
           image: _buildImage('assets/images/icon.png'),
           decoration: _getPageDecoration(),
         ),
         PageViewModel(
-          title: "Rastrea tu Progreso 📊",
-          body: "Visualiza tus rachas, consulta estadísticas y monitorea tu mejora con el tiempo con hermosos gráficos e información.",
+          title: l10n.onboardingTitle2,
+          body: l10n.onboardingBody2,
           image: _buildImage('assets/images/icon.png'),
           decoration: _getPageDecoration(),
         ),
         PageViewModel(
-          title: "Gana Recompensas 🎁",
-          body: "¡Completa hábitos para ganar monedas! Canjéalas por recompensas reales. ¡Cuanto más consistente seas, más ganarás!",
+          title: l10n.onboardingTitle3,
+          body: l10n.onboardingBody3,
           image: _buildImage('assets/images/icon.png'),
           decoration: _getPageDecoration(),
         ),
         PageViewModel(
-          title: "Únete a Retos 🏆",
-          body: "Compite con amigos, únete a retos de la comunidad y escala en las clasificaciones. ¡Mantente motivado junto a otros!",
-          image: _buildImage('assets/images/icon.png'),
-          decoration: _getPageDecoration(),
-        ),
-        PageViewModel(
-          title: "Comienza tu Viaje ✨",
-          body: "Puedes comenzar a usar la app de inmediato, o iniciar sesión para sincronizar tus datos entre dispositivos. ¡Construyamos mejores hábitos!",
+          title: l10n.getStarted,
+          body: l10n.youCanRegisterLater,
           image: _buildImage('assets/images/icon.png'),
           decoration: _getPageDecoration(),
           footer: Padding(
@@ -68,12 +64,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Comenzar', style: TextStyle(fontSize: 16)),
+                  child: Text(l10n.getStarted, style: const TextStyle(fontSize: 16)),
                 ),
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => _onSkip(context),
-                  child: const Text('Saltar Tutorial'),
+                  child: Text(l10n.skip),
                 ),
               ],
             ),
@@ -83,9 +79,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       onDone: () => _onFinish(context),
       onSkip: () => _onSkip(context),
       showSkipButton: true,
-      skip: const Text('Saltar', style: TextStyle(fontWeight: FontWeight.w600)),
+      skip: Text(l10n.skip, style: const TextStyle(fontWeight: FontWeight.w600)),
       next: const Icon(Icons.arrow_forward),
-      done: const Text('Listo', style: TextStyle(fontWeight: FontWeight.w600)),
+      done: Text(l10n.next, style: const TextStyle(fontWeight: FontWeight.w600)),
       dotsDecorator: DotsDecorator(
         size: const Size.square(10.0),
         activeSize: const Size(20.0, 10.0),

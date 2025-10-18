@@ -206,6 +206,211 @@ abstract class AppLocalizations {
   String get skip;
   String get next;
   String get back;
+
+  // Additional translations for screens
+  String get days;
+  String get level;
+  String get user;
+  String get onFire;
+  String get completedPlural;
+  String get noRankingsYet;
+  String get noStreaksYet;
+  String get noActivityThisWeek;
+  String get completeHabitsToSeeRankings;
+  String get you;
+  String get weeklyActivity;
+  String get totalOverview;
+  String get activeGoals;
+  String get daysActive;
+  String get weeklyCompletion;
+  String get ofGoalsCompleted;
+  String get exportCSV;
+  String get exportPDF;
+  String get downloadYourHabitsData;
+  String get csvExportedSuccessfully;
+  String get errorExportingCSV;
+  String get pdfReportExportedSuccessfully;
+  String get errorExportingPDF;
+  String get leaderboard;
+  String get xp;
+  String get streaks;
+  String get quantity;
+  String get monthly;
+  String get repeatEveryDay;
+  String get selectYourTimeReminder;
+  String get selectYourEndDate;
+  String get pleaseEnterGoal;
+  String get pleaseSelectEndDate;
+  String get pleaseSelectReminderTime;
+  String get pleaseEnterTargetValue;
+  String get goalCreatedWithReminder;
+  String get setYourGoals;
+  String get goal;
+  String get unitMin;
+  String get appearance;
+  String get switchBetweenLightAndDark;
+  String get showCompletedHabits;
+  String get displayCompletedHabitsInList;
+  String get showProgressBars;
+  String get displayProgressIndicators;
+  String get feedback;
+  String get soundEffects;
+  String get playSoundsWhenCompletingHabits;
+  String get vibration;
+  String get vibrateOnHabitCompletion;
+  String get calendar;
+  String get weekStartsOn;
+  String get dateFormat;
+  String get dataAndPrivacy;
+  String get clearAllData;
+  String get thisCannotBeUndone;
+  String get clearAllDataQuestion;
+  String get thisWillDeleteAllYourData;
+  String get clearAll;
+  String get dataClearedSuccessfully;
+  String get errorClearingData;
+  String get available;
+  String get redeemed;
+  String get availableCoinsLabel;
+  String get totalEarned;
+  String get spent;
+  String get noRewardsRedeemedYet;
+  String get completeHabitsToEarnCoins;
+  String get needMoreCoins;
+  String get redeem;
+  String get redeemRewardQuestion;
+  String get costCoins;
+  String get youWillHaveCoinsLeft;
+  String get rewardRedeemedEnjoy;
+  String get failedToRedeemReward;
+  String get insufficientCoins;
+  String get youNeedMoreCoins;
+  String get justNow;
+  String get minuteAgo;
+  String get minutesAgo;
+  String get hourAgo;
+  String get hoursAgo;
+  String get dayAgo;
+  String get daysAgo;
+  String get name;
+  String get thisWeekLabel;
+  String get totalHours;
+  String get switchTheme;
+  String get closeSession;
+
+  // Reminder Settings
+  String get reminderSettings;
+  String get smartReminders;
+  String get letUsRemindYou;
+  String get defaultReminderTime;
+  String get smartRemindersDescription;
+  String get streakAlerts;
+  String get getMotivatedOnStreak;
+  String get eveningReminder;
+  String get remindIncompleteHabits;
+  String get howSmartRemindersWork;
+  String get smartRemindersExplanation;
+  String get reminderTimeUpdated;
+
+  // Achievements
+  String get badges;
+  String get xpToNextLevel;
+  String get earned;
+  String get close;
+
+  // Friends
+  String get myFriends;
+  String get requests;
+  String get noFriendsYet;
+  String get addFriendsToSeeProgress;
+  String get dayStreak;
+  String get removeFriend;
+  String get removeFriendQuestion;
+  String get remove;
+  String get friendRemoved;
+  String get noPendingRequests;
+  String get sent;
+  String get friendRequestAcceptedMessage;
+  String get friendRequestRejected;
+  String get addFriendTitle;
+  String get searchByEmail;
+  String get friendRequestSentMessage;
+  String get add;
+  String get errorSearchingUsers;
+  String get ago;
+
+  // Home Screen Messages
+  String greatJobCoins(int coins);
+  String completedWithCoins(String value, String unit, int coins);
+
+  // Error Messages
+  String errorSigningInMessage(String error);
+  String errorMessage(String error);
+
+  // Challenges
+  String get myChallenges;
+  String get allChallenges;
+  String get noChalllengesYet;
+  String get goToAllChallenges;
+  String get noChallengesAvailable;
+  String get challengesRecreated;
+  String get daysLabel;
+  String get participantsLabel;
+  String get streakLabel;
+  String get daysCompleted;
+  String get leftChallenge;
+  String get joinedChallenge;
+  String get daysRemaining;
+  String get challengeTitleLabel;
+  String get challengeTitleHint;
+  String get descriptionLabel;
+  String get descriptionHint;
+  String get durationDaysLabel;
+  String get durationHint;
+  String get targetDaysLabel;
+  String get targetDaysHint;
+  String get categoryLabel;
+  String get createButton;
+  String get pleaseEnterTitle;
+  String get pleaseEnterDescription;
+  String get pleaseEnterValidDuration;
+  String get pleaseEnterValidTarget;
+  String challengeCreatedMessage(String title);
+
+  // Challenge Detail Screen
+  String get noChallengeProgress;
+  String get completedDaysLabel;
+  String get streak;
+  String get remaining;
+  String get completedToday;
+  String get markTodayLabel;
+  String get markAsCompleted;
+  String get dayMarkedCompleted;
+  String get yourProgress;
+  String get daysCompletedProgress;
+  String get successRate;
+  String get startDateLabel;
+  String get endDateLabel;
+  String get challengeCalendar;
+
+  // Registration Dialog
+  String get saveYourProgress;
+  String get youveBeenDoingGreat;
+  String get registerNowTo;
+  String get syncYourDataAcrossDevices;
+  String get neverLoseYourProgress;
+  String get connectWithFriends;
+  String get joinChallengesText;
+  String get backupYourHabits;
+  String get maybeLater;
+  String get registerNow;
+
+  // Review Dialog
+  String get enjoyingDailyHabits;
+  String get wedLoveToHearYourFeedback;
+  String get yourReviewHelpsUs;
+  String get noThanks;
+  String get rateNow;
 }
 
 class _AppLocalizationsDelegate

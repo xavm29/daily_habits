@@ -13,6 +13,7 @@ import '../services/analytics_service.dart';
 import '../styles/styles.dart';
 import '../utils/dialogs.dart';
 import 'login_custom.dart';
+import '../l10n/app_localizations.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -26,10 +27,11 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
         backgroundColor: AppColors.primarys,
         appBar: AppBar(
-          title: const Text("Perfil"),
+          title: Text(l10n.profile),
         ),
         body: Column(children: [
           Padding(
@@ -72,11 +74,11 @@ class _ProfileState extends State<Profile> {
                           children: [
                             Text(FirebaseService.instance.user?.displayName ??
                                 " --- "),
-                            const Text("Nombre"),
+                            Text(l10n.name),
                             InkWell(
                                 onTap: () async {
                                   String? nameEntered =
-                                  await inputDialog(context, "Tu nombre");
+                                  await inputDialog(context, l10n.name);
                                   if (nameEntered != null) {
                                     if (!mounted) return;
                                     userData.setUserName(nameEntered);
@@ -89,7 +91,7 @@ class _ProfileState extends State<Profile> {
                       const SizedBox(
                         width: 20,
                       ),
-                      const Text("esta semana"),
+                      Text(l10n.thisWeekLabel),
                     ],
                   ),
                   const Divider(
@@ -110,9 +112,9 @@ class _ProfileState extends State<Profile> {
                           flex: 2,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text("Horas totales"),
-                              Text("18", style: TextStyle(fontSize: 18)),
+                            children: [
+                              Text(l10n.totalHours),
+                              const Text("18", style: TextStyle(fontSize: 18)),
                             ],
                           ),
                         ),
@@ -128,9 +130,9 @@ class _ProfileState extends State<Profile> {
                           flex: 2,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text("Completados"),
-                              Text("12", style: TextStyle(fontSize: 18)),
+                            children: [
+                              Text(l10n.completed),
+                              const Text("12", style: TextStyle(fontSize: 18)),
                             ],
                           ),
                         ),
@@ -218,21 +220,21 @@ class _ProfileState extends State<Profile> {
                         ],
                       ),
                     ),
-                    const Expanded(
+                    Expanded(
                       flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Racha actual"),
+                          Text(l10n.currentStreak),
                         ],
                       ),
                     ),
-                    const Expanded(
+                    Expanded(
                       flex: 1,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("20 días"),
+                          Text("20 ${l10n.days}"),
                         ],
                       ),
                     ),
@@ -250,8 +252,8 @@ class _ProfileState extends State<Profile> {
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
                   return SwitchListTile(
-                    title: const Text('Modo Oscuro'),
-                    subtitle: const Text('Cambiar entre tema claro y oscuro'),
+                    title: Text(l10n.darkMode),
+                    subtitle: Text(l10n.switchBetweenLightAndDark),
                     secondary: Icon(
                       themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                       color: AppColors.primarys,
@@ -283,8 +285,8 @@ class _ProfileState extends State<Profile> {
                         builder: (context) => const LoginCustomScreen()));
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-              child: const Text(
-                'Cerrar sesión',
+              child: Text(
+                l10n.closeSession,
                 style: TextStyles.label,
               ))
         ]

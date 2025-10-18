@@ -5,6 +5,7 @@ import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 
 class ChallengeDetailScreen extends StatefulWidget {
   final Challenge challenge;
@@ -44,8 +45,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           final progress = snapshot.data;
 
           if (progress == null) {
-            return const Center(
-              child: Text('No se encontró el progreso del reto'),
+            final l10n = AppLocalizations.of(context);
+            return Center(
+              child: Text(l10n.noChallengeProgress),
             );
           }
 
@@ -70,6 +72,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   }
 
   Widget _buildHeaderCard(ChallengeProgress progress) {
+    final l10n = AppLocalizations.of(context);
     final progressPercent = progress.getProgress(widget.challenge.targetCount);
 
     return Card(
@@ -109,25 +112,25 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               children: [
                 _buildStat(
                   icon: Icons.check_circle,
-                  label: 'Completados',
+                  label: l10n.completedDaysLabel,
                   value: '${progress.completedDays}',
                   color: Colors.green,
                 ),
                 _buildStat(
                   icon: Icons.local_fire_department,
-                  label: 'Racha',
+                  label: l10n.streak,
                   value: '${progress.currentStreak}',
                   color: Colors.orange,
                 ),
                 _buildStat(
                   icon: Icons.flag,
-                  label: 'Meta',
+                  label: l10n.goal,
                   value: '${widget.challenge.targetCount}',
                   color: Colors.blue,
                 ),
                 _buildStat(
                   icon: Icons.timer,
-                  label: 'Restantes',
+                  label: l10n.remaining,
                   value: '${widget.challenge.getDaysRemaining()}',
                   color: Colors.purple,
                 ),
@@ -169,6 +172,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   }
 
   Widget _buildTodayCard(ChallengeProgress progress) {
+    final l10n = AppLocalizations.of(context);
     final hasCompletedToday = progress.hasCompletedToday();
 
     return Card(
@@ -194,8 +198,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     children: [
                       Text(
                         hasCompletedToday
-                            ? '¡Completado hoy!'
-                            : 'Marca el día de hoy',
+                            ? l10n.completedToday
+                            : l10n.markTodayLabel,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -222,16 +226,17 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                   onPressed: () async {
                     await _challengeService.markTodayCompleted(widget.challenge.id);
                     if (mounted) {
+                      final l10n = AppLocalizations.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('¡Día marcado como completado!'),
+                        SnackBar(
+                          content: Text(l10n.dayMarkedCompleted),
                           backgroundColor: Colors.green,
                         ),
                       );
                     }
                   },
                   icon: const Icon(Icons.check),
-                  label: const Text('Marcar como Completado'),
+                  label: Text(l10n.markAsCompleted),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.purplelow,
                     foregroundColor: Colors.white,
@@ -250,6 +255,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   }
 
   Widget _buildProgressCard(ChallengeProgress progress) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -258,9 +264,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Tu Progreso',
-              style: TextStyle(
+            Text(
+              l10n.yourProgress,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -270,7 +276,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               children: [
                 Expanded(
                   child: _buildProgressItem(
-                    'Días Completados',
+                    l10n.daysCompletedProgress,
                     '${progress.completedDays} / ${widget.challenge.targetCount}',
                     Colors.green,
                   ),
@@ -278,7 +284,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildProgressItem(
-                    'Tasa de Éxito',
+                    l10n.successRate,
                     '${((progress.completedDays / widget.challenge.durationDays) * 100).toStringAsFixed(0)}%',
                     Colors.blue,
                   ),
@@ -290,7 +296,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               children: [
                 Expanded(
                   child: _buildProgressItem(
-                    'Fecha de Inicio',
+                    l10n.startDateLabel,
                     DateFormat('d MMM', 'es').format(progress.joinedDate),
                     Colors.orange,
                   ),
@@ -298,7 +304,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildProgressItem(
-                    'Fecha Final',
+                    l10n.endDateLabel,
                     DateFormat('d MMM', 'es').format(widget.challenge.endDate),
                     Colors.purple,
                   ),
@@ -343,6 +349,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   }
 
   Widget _buildCalendarView(ChallengeProgress progress) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -351,9 +358,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Calendario del Reto',
-              style: TextStyle(
+            Text(
+              l10n.challengeCalendar,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),

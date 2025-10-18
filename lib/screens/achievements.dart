@@ -4,6 +4,7 @@ import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 class Achievements extends StatefulWidget {
   const Achievements({Key? key}) : super(key: key);
@@ -127,10 +128,11 @@ class _AchievementsState extends State<Achievements> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Achievements'),
+        title: Text(l10n.achievements),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
       ),
@@ -195,7 +197,7 @@ class _AchievementsState extends State<Achievements> {
                     lineHeight: 20,
                     percent: currentLevel.getProgress(totalXP),
                     center: Text(
-                      '${currentLevel.getXPToNextLevel(totalXP)} XP to next level',
+                      '${currentLevel.getXPToNextLevel(totalXP)} ${l10n.xpToNextLevel}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -227,9 +229,9 @@ class _AchievementsState extends State<Achievements> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Badges',
-                        style: TextStyle(
+                      Text(
+                        l10n.badges,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -285,6 +287,7 @@ class _BadgeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () {
         showDialog(
@@ -303,7 +306,7 @@ class _BadgeCard extends StatelessWidget {
                 Text(badge.description),
                 const SizedBox(height: 8),
                 Text(
-                  isEarned ? '✅ Earned!' : '🔒 Locked',
+                  isEarned ? '✅ ${l10n.earned}' : '🔒 ${l10n.locked}',
                   style: TextStyle(
                     color: isEarned ? Colors.green : Colors.grey,
                     fontWeight: FontWeight.bold,
@@ -314,7 +317,7 @@ class _BadgeCard extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                child: Text(l10n.close),
               ),
             ],
           ),

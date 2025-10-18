@@ -2,6 +2,7 @@ import 'package:daily_habits/models/friend_model.dart';
 import 'package:daily_habits/services/friend_service.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({Key? key}) : super(key: key);
@@ -47,8 +48,9 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         _isSearching = false;
       });
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching users: $e')),
+          SnackBar(content: Text('${l10n.errorSearchingUsers}: $e')),
         );
       }
     }
@@ -56,19 +58,20 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Friends'),
+        title: Text(l10n.friends),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
-          tabs: const [
-            Tab(text: 'My Friends', icon: Icon(Icons.people)),
-            Tab(text: 'Requests', icon: Icon(Icons.notifications)),
+          tabs: [
+            Tab(text: l10n.myFriends, icon: const Icon(Icons.people)),
+            Tab(text: l10n.requests, icon: const Icon(Icons.notifications)),
           ],
         ),
       ),
@@ -83,12 +86,13 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         onPressed: () => _showAddFriendDialog(),
         backgroundColor: AppColors.primarys,
         icon: const Icon(Icons.person_add),
-        label: const Text('Add Friend'),
+        label: Text(l10n.addFriend),
       ),
     );
   }
 
   Widget _buildFriendsList() {
+    final l10n = AppLocalizations.of(context);
     return StreamBuilder<List<Friend>>(
       stream: FriendService.instance.getFriends(),
       builder: (context, snapshot) {
@@ -100,17 +104,17 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.people_outline, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
+              children: [
+                const Icon(Icons.people_outline, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
                 Text(
-                  'No friends yet',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                  l10n.noFriendsYet,
+                  style: const TextStyle(fontSize: 18, color: Colors.grey),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Add friends to see their progress!',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  l10n.addFriendsToSeeProgress,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
@@ -139,7 +143,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                 subtitle: Row(
                   children: [
                     const Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
-                    Text(' ${friend.currentStreak} day streak'),
+                    Text(' ${friend.currentStreak} ${l10n.dayStreak}'),
                     const SizedBox(width: 16),
                     const Icon(Icons.star, size: 16, color: Colors.amber),
                     Text(' ${friend.totalXP} XP'),
@@ -147,13 +151,13 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                 ),
                 trailing: PopupMenuButton(
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'remove',
                       child: Row(
                         children: [
-                          Icon(Icons.person_remove, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('Remove Friend'),
+                          const Icon(Icons.person_remove, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Text(l10n.removeFriend),
                         ],
                       ),
                     ),
@@ -163,16 +167,16 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('Remove Friend'),
-                          content: Text('Are you sure you want to remove ${friend.userName}?'),
+                          title: Text(l10n.removeFriend),
+                          content: Text('${l10n.removeFriendQuestion} ${friend.userName}?'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Cancel'),
+                              child: Text(l10n.cancel),
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(context, true),
-                              child: const Text('Remove', style: TextStyle(color: Colors.red)),
+                              child: Text(l10n.remove, style: const TextStyle(color: Colors.red)),
                             ),
                           ],
                         ),
@@ -182,7 +186,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                         await FriendService.instance.removeFriend(friend.userId);
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Friend removed')),
+                            SnackBar(content: Text(l10n.friendRemoved)),
                           );
                         }
                       }
@@ -198,6 +202,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   }
 
   Widget _buildRequestsList() {
+    final l10n = AppLocalizations.of(context);
     return StreamBuilder<List<FriendRequest>>(
       stream: FriendService.instance.getPendingRequests(),
       builder: (context, snapshot) {
@@ -209,12 +214,12 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.notifications_none, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
+              children: [
+                const Icon(Icons.notifications_none, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
                 Text(
-                  'No pending requests',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                  l10n.noPendingRequests,
+                  style: const TextStyle(fontSize: 18, color: Colors.grey),
                 ),
               ],
             ),
@@ -240,7 +245,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                       : null,
                 ),
                 title: Text(request.fromUserName),
-                subtitle: Text('Sent ${_formatDate(request.createdAt)}'),
+                subtitle: Text('${l10n.sent} ${_formatDate(request.createdAt)}'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -250,7 +255,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                         await FriendService.instance.acceptFriendRequest(request);
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Friend request accepted!')),
+                            SnackBar(content: Text(l10n.friendRequestAcceptedMessage)),
                           );
                         }
                       },
@@ -261,7 +266,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                         await FriendService.instance.rejectFriendRequest(request.id);
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Friend request rejected')),
+                            SnackBar(content: Text(l10n.friendRequestRejected)),
                           );
                         }
                       },
@@ -277,18 +282,19 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   }
 
   void _showAddFriendDialog() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Add Friend'),
+          title: Text(l10n.addFriendTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  labelText: 'Search by email',
+                  labelText: l10n.searchByEmail,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search),
@@ -334,11 +340,11 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                             Navigator.pop(context);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Friend request sent!')),
+                                SnackBar(content: Text(l10n.friendRequestSentMessage)),
                               );
                             }
                           },
-                          child: const Text('Add'),
+                          child: Text(l10n.add),
                         ),
                       );
                     },
@@ -353,7 +359,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                 _searchResults.clear();
                 Navigator.pop(context);
               },
-              child: const Text('Close'),
+              child: Text(l10n.close),
             ),
           ],
         ),
@@ -362,17 +368,18 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   }
 
   String _formatDate(DateTime date) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+      return '${difference.inDays} ${difference.inDays > 1 ? l10n.daysAgo : l10n.dayAgo} ${l10n.ago}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+      return '${difference.inHours} ${difference.inHours > 1 ? l10n.hoursAgo : l10n.hourAgo} ${l10n.ago}';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+      return '${difference.inMinutes} ${difference.inMinutes > 1 ? l10n.minutesAgo : l10n.minuteAgo} ${l10n.ago}';
     } else {
-      return 'Just now';
+      return l10n.justNow;
     }
   }
 }

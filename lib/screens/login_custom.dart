@@ -10,6 +10,7 @@ import '../models/completed_goal.dart';
 import '../services/firebase_service.dart';
 import '../services/analytics_service.dart';
 import '../services/crashlytics_service.dart';
+import '../l10n/app_localizations.dart';
 import 'home.dart';
 
 class LoginCustomScreen extends StatefulWidget {
@@ -74,8 +75,9 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
     } catch (e, stackTrace) {
       await CrashlyticsService.instance.recordAuthError(e, stackTrace);
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing in: $e')),
+        SnackBar(content: Text(l10n.errorSigningInMessage(e.toString()))),
       );
     } finally {
       if (mounted) {
@@ -149,8 +151,9 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
     } catch (e, stackTrace) {
       await CrashlyticsService.instance.recordAuthError(e, stackTrace);
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(content: Text(l10n.errorMessage(e.toString()))),
       );
     } finally {
       if (mounted) {
@@ -206,6 +209,7 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -235,7 +239,7 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
 
                   // Welcome text
                   Text(
-                    _isSignUp ? 'Create Account' : 'Welcome Back',
+                    _isSignUp ? l10n.createAccount : l10n.welcomeBack,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 28,
@@ -245,8 +249,8 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                   const SizedBox(height: 8),
                   Text(
                     _isSignUp
-                        ? 'Sign up to save your progress'
-                        : 'Sign in to continue',
+                        ? l10n.signUpToSaveProgress
+                        : l10n.signInToContinue,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       fontSize: 16,
@@ -270,18 +274,18 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                             // Email field
                             TextFormField(
                               controller: _emailController,
-                              decoration: const InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon: Icon(Icons.email),
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: l10n.email,
+                                prefixIcon: const Icon(Icons.email),
+                                border: const OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
+                                  return l10n.pleaseEnterEmail;
                                 }
                                 if (!value.contains('@')) {
-                                  return 'Please enter a valid email';
+                                  return l10n.pleaseEnterValidEmail;
                                 }
                                 return null;
                               },
@@ -291,18 +295,18 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                             // Password field
                             TextFormField(
                               controller: _passwordController,
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                                prefixIcon: Icon(Icons.lock),
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: l10n.password,
+                                prefixIcon: const Icon(Icons.lock),
+                                border: const OutlineInputBorder(),
                               ),
                               obscureText: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
+                                  return l10n.pleaseEnterPassword;
                                 }
                                 if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
+                                  return l10n.passwordMustBe6Characters;
                                 }
                                 return null;
                               },
@@ -330,7 +334,7 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                                       ),
                                     )
                                   : Text(
-                                      _isSignUp ? 'Sign Up' : 'Sign In',
+                                      _isSignUp ? l10n.signUp : l10n.signIn,
                                       style: const TextStyle(fontSize: 16),
                                     ),
                             ),
@@ -345,8 +349,8 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                               },
                               child: Text(
                                 _isSignUp
-                                    ? 'Already have an account? Sign In'
-                                    : 'Don\'t have an account? Sign Up',
+                                    ? l10n.alreadyHaveAccount
+                                    : l10n.dontHaveAccount,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -358,7 +362,7 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 16),
                                   child: Text(
-                                    'OR',
+                                    l10n.or,
                                     style: TextStyle(color: Colors.grey[600]),
                                   ),
                                 ),
@@ -375,7 +379,7 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                                 height: 24,
                                 width: 24,
                               ),
-                              label: const Text('Continue with Google'),
+                              label: Text(l10n.continueWithGoogle),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
@@ -393,9 +397,9 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                   // Skip button
                   TextButton(
                     onPressed: _handleSkip,
-                    child: const Text(
-                      'Skip for now',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.skipForNow,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         decoration: TextDecoration.underline,
@@ -404,7 +408,7 @@ class _LoginCustomScreenState extends State<LoginCustomScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'You can register later to sync your data',
+                    l10n.youCanRegisterLater,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 12,

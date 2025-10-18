@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:daily_habits/styles/styles.dart';
+import '../l10n/app_localizations.dart';
 
 class ReviewPromptDialog extends StatelessWidget {
   final VoidCallback onReviewNow;
@@ -15,37 +16,38 @@ class ReviewPromptDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       title: Column(
-        children: const [
-          Icon(Icons.star, color: Colors.amber, size: 48),
-          SizedBox(height: 12),
+        children: [
+          const Icon(Icons.star, color: Colors.amber, size: 48),
+          const SizedBox(height: 12),
           Text(
-            'Enjoying Daily Habits?',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            l10n.enjoyingDailyHabits,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
         ],
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           Text(
-            'We\'d love to hear your feedback!',
+            l10n.wedLoveToHearYourFeedback,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            'Your review helps us improve and reach more people.',
+            l10n.yourReviewHelpsUs,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
-          SizedBox(height: 16),
-          Row(
+          const SizedBox(height: 16),
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.star, color: Colors.amber, size: 28),
@@ -60,11 +62,11 @@ class ReviewPromptDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onNoThanks,
-          child: const Text('No Thanks', style: TextStyle(color: Colors.grey)),
+          child: Text(l10n.noThanks, style: const TextStyle(color: Colors.grey)),
         ),
         TextButton(
           onPressed: onLater,
-          child: const Text('Maybe Later'),
+          child: Text(l10n.maybeLater),
         ),
         ElevatedButton(
           onPressed: onReviewNow,
@@ -75,7 +77,7 @@ class ReviewPromptDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text('Rate Now'),
+          child: Text(l10n.rateNow),
         ),
       ],
     );

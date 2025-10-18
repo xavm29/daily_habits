@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:daily_habits/styles/styles.dart';
+import '../l10n/app_localizations.dart';
 
 class RegistrationPromptDialog extends StatelessWidget {
   final VoidCallback onRegister;
@@ -13,18 +14,19 @@ class RegistrationPromptDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       title: Row(
-        children: const [
-          Icon(Icons.cloud_upload, color: AppColors.primarys, size: 32),
-          SizedBox(width: 12),
+        children: [
+          const Icon(Icons.cloud_upload, color: AppColors.primarys, size: 32),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Save Your Progress',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              l10n.saveYourProgress,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -33,27 +35,27 @@ class RegistrationPromptDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'You\'ve been doing great! 🎉',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Text(
+            l10n.youveBeenDoingGreat,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Register now to:',
-            style: TextStyle(fontSize: 14),
+          Text(
+            l10n.registerNowTo,
+            style: const TextStyle(fontSize: 14),
           ),
           const SizedBox(height: 8),
-          _buildBenefit(Icons.cloud_done, 'Sync your data across devices'),
-          _buildBenefit(Icons.security, 'Never lose your progress'),
-          _buildBenefit(Icons.people, 'Connect with friends'),
-          _buildBenefit(Icons.emoji_events, 'Join challenges'),
-          _buildBenefit(Icons.backup, 'Backup your habits'),
+          _buildBenefit(context, Icons.cloud_done, l10n.syncYourDataAcrossDevices),
+          _buildBenefit(context, Icons.security, l10n.neverLoseYourProgress),
+          _buildBenefit(context, Icons.people, l10n.connectWithFriends),
+          _buildBenefit(context, Icons.emoji_events, l10n.joinChallengesText),
+          _buildBenefit(context, Icons.backup, l10n.backupYourHabits),
         ],
       ),
       actions: [
         TextButton(
           onPressed: onLater,
-          child: const Text('Maybe Later'),
+          child: Text(l10n.maybeLater),
         ),
         ElevatedButton(
           onPressed: onRegister,
@@ -64,13 +66,13 @@ class RegistrationPromptDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text('Register Now'),
+          child: Text(l10n.registerNow),
         ),
       ],
     );
   }
 
-  Widget _buildBenefit(IconData icon, String text) {
+  Widget _buildBenefit(BuildContext context, IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

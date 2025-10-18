@@ -9,6 +9,7 @@ import '../models/user_data.dart';
 import '../services/firebase_service.dart';
 import '../services/export_service.dart';
 import '../models/gamification_model.dart';
+import '../l10n/app_localizations.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -166,10 +167,11 @@ class _StatisticsState extends State<Statistics> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Statistics'),
+        title: Text(l10n.statistics),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
       ),
@@ -184,9 +186,9 @@ class _StatisticsState extends State<Statistics> {
                 children: [
                   Expanded(
                     child: _StatCard(
-                      title: 'Current Streak',
+                      title: l10n.currentStreak,
                       value: '$currentStreak',
-                      subtitle: 'days',
+                      subtitle: l10n.days,
                       icon: Icons.local_fire_department,
                       color: Colors.orange,
                     ),
@@ -194,9 +196,9 @@ class _StatisticsState extends State<Statistics> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: _StatCard(
-                      title: 'Longest Streak',
+                      title: l10n.longestStreak,
                       value: '$longestStreak',
-                      subtitle: 'days',
+                      subtitle: l10n.days,
                       icon: Icons.emoji_events,
                       color: Colors.amber,
                     ),
@@ -207,9 +209,9 @@ class _StatisticsState extends State<Statistics> {
 
               // Completion Rate Card
               _StatCard(
-                title: 'Weekly Completion',
+                title: l10n.weeklyCompletion,
                 value: '${weeklyCompletionRate.toStringAsFixed(1)}%',
-                subtitle: 'of goals completed',
+                subtitle: l10n.ofGoalsCompleted,
                 icon: Icons.check_circle,
                 color: Colors.green,
                 isFullWidth: true,
@@ -227,9 +229,9 @@ class _StatisticsState extends State<Statistics> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Weekly Activity',
-                        style: TextStyle(
+                      Text(
+                        l10n.weeklyActivity,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -301,9 +303,9 @@ class _StatisticsState extends State<Statistics> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Total Overview',
-                        style: TextStyle(
+                      Text(
+                        l10n.totalOverview,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -311,19 +313,19 @@ class _StatisticsState extends State<Statistics> {
                       const SizedBox(height: 16),
                       _InfoRow(
                         icon: Icons.flag,
-                        label: 'Active Goals',
+                        label: l10n.activeGoals,
                         value: '${goals.length}',
                       ),
                       const Divider(),
                       _InfoRow(
                         icon: Icons.check_circle_outline,
-                        label: 'Total Completed',
+                        label: l10n.totalCompleted,
                         value: '${userData.tasks.length}',
                       ),
                       const Divider(),
                       _InfoRow(
                         icon: Icons.calendar_today,
-                        label: 'Days Active',
+                        label: l10n.daysActive,
                         value: _getActiveDays().toString(),
                       ),
                     ],
@@ -343,17 +345,17 @@ class _StatisticsState extends State<Statistics> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Export Data',
-                        style: TextStyle(
+                      Text(
+                        l10n.dataExport,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Download your habits data in different formats',
-                        style: TextStyle(
+                      Text(
+                        l10n.downloadYourHabitsData,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
                         ),
@@ -365,7 +367,7 @@ class _StatisticsState extends State<Statistics> {
                             child: ElevatedButton.icon(
                               onPressed: () => _exportToCSV(),
                               icon: const Icon(Icons.table_chart),
-                              label: const Text('Export CSV'),
+                              label: Text(l10n.exportCSV),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
@@ -378,7 +380,7 @@ class _StatisticsState extends State<Statistics> {
                             child: ElevatedButton.icon(
                               onPressed: () => _exportToPDF(),
                               icon: const Icon(Icons.picture_as_pdf),
-                              label: const Text('Export PDF'),
+                              label: Text(l10n.exportPDF),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
@@ -406,18 +408,20 @@ class _StatisticsState extends State<Statistics> {
         tasks: userData.tasks,
       );
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('CSV exported successfully! 📊'),
+          SnackBar(
+            content: Text(l10n.csvExportedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error exporting CSV: $e'),
+            content: Text('${l10n.errorExportingCSV}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -442,18 +446,20 @@ class _StatisticsState extends State<Statistics> {
         },
       );
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('PDF report exported successfully! 📄'),
+          SnackBar(
+            content: Text(l10n.pdfReportExportedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error exporting PDF: $e'),
+            content: Text('${l10n.errorExportingPDF}: $e'),
             backgroundColor: Colors.red,
           ),
         );

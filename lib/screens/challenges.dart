@@ -5,6 +5,7 @@ import 'package:daily_habits/services/challenge_service.dart';
 import 'package:daily_habits/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import '../l10n/app_localizations.dart';
 
 class Challenges extends StatefulWidget {
   const Challenges({Key? key}) : super(key: key);
@@ -31,10 +32,11 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text('Retos'),
+        title: Text(l10n.challenges),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
         actions: [
@@ -45,8 +47,8 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
               await _challengeService.recreateDefaultChallenges();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Retos recreados exitosamente'),
+                  SnackBar(
+                    content: Text(l10n.challengesRecreated),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -59,9 +61,9 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(text: 'Mis Retos'),
-            Tab(text: 'Todos los Retos'),
+          tabs: [
+            Tab(text: l10n.myChallenges),
+            Tab(text: l10n.allChallenges),
           ],
         ),
       ),
@@ -91,6 +93,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
         final challenges = snapshot.data ?? [];
 
         if (challenges.isEmpty) {
+          final l10n = AppLocalizations.of(context);
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -98,12 +101,12 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                 Icon(Icons.emoji_events_outlined, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
-                  'No estás en ningún reto',
+                  l10n.noChalllengesYet,
                   style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Ve a "Todos los Retos" para unirte',
+                  l10n.goToAllChallenges,
                   style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                 ),
               ],
@@ -138,8 +141,9 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
         final challenges = snapshot.data ?? [];
 
         if (challenges.isEmpty) {
-          return const Center(
-            child: Text('No hay retos disponibles'),
+          final l10n = AppLocalizations.of(context);
+          return Center(
+            child: Text(l10n.noChallengesAvailable),
           );
         }
 
@@ -167,6 +171,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
 
   // Construye la tarjeta del reto con progreso real
   Widget _buildChallengeCard(Challenge challenge, {required bool isParticipating}) {
+    final l10n = AppLocalizations.of(context);
     return StreamBuilder<ChallengeProgress?>(
       stream: isParticipating
         ? _challengeService.getUserProgress(challenge.id)
@@ -214,7 +219,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
-                                        'Activo',
+                                        l10n.active,
                                         style: TextStyle(
                                           color: Colors.green[700],
                                           fontSize: 12,
@@ -247,7 +252,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                       size: 16, color: Colors.grey[600]),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '${challenge.durationDays} días',
+                                    '${challenge.durationDays} ${l10n.daysLabel}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[600],
@@ -258,7 +263,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                       size: 16, color: Colors.grey[600]),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '${challenge.participants.length} participantes',
+                                    '${challenge.participants.length} ${l10n.participantsLabel}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[600],
@@ -274,7 +279,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                         size: 16, color: Colors.orange[700]),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Racha: ${progress.currentStreak} días',
+                                      '${l10n.streakLabel}: ${progress.currentStreak} ${l10n.daysLabel}',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.orange[700],
@@ -309,7 +314,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                     if (isParticipating && progress != null) ...[
                       const SizedBox(height: 12),
                       Text(
-                        '${progress.completedDays} de ${challenge.targetCount} días completados',
+                        '${progress.completedDays} de ${challenge.targetCount} ${l10n.daysCompleted}',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[700],
@@ -328,8 +333,8 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                   await _challengeService.leaveChallenge(challenge.id);
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Has salido del reto'),
+                                      SnackBar(
+                                        content: Text(l10n.leftChallenge),
                                       ),
                                     );
                                   }
@@ -337,8 +342,8 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                   await _challengeService.joinChallenge(challenge.id);
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Te has unido al reto!'),
+                                      SnackBar(
+                                        content: Text(l10n.joinedChallenge),
                                       ),
                                     );
                                   }
@@ -348,8 +353,8 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                                   ? Icons.exit_to_app
                                   : Icons.emoji_events),
                               label: Text(isParticipating
-                                  ? 'Salir del Reto'
-                                  : 'Unirse al Reto'),
+                                  ? l10n.leaveChallenge
+                                  : l10n.joinChallenge),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: isParticipating
                                     ? Colors.grey[300]
@@ -366,7 +371,7 @@ class _ChallengesState extends State<Challenges> with SingleTickerProviderStateM
                           if (isParticipating) ...[
                             const SizedBox(width: 8),
                             Text(
-                              '${challenge.getDaysRemaining()} días restantes',
+                              '${challenge.getDaysRemaining()} ${l10n.daysRemaining}',
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 12,
@@ -460,8 +465,9 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Crear Reto Personalizado'),
+      title: Text(l10n.createCustomChallenge),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -469,49 +475,49 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
           children: [
             TextField(
               controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título del Reto*',
-                hintText: 'ej., Reto de Meditación Matutina',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.challengeTitleLabel,
+                hintText: l10n.challengeTitleHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Descripción*',
-                hintText: '¿De qué trata este reto?',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.descriptionLabel,
+                hintText: l10n.descriptionHint,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: durationController,
-              decoration: const InputDecoration(
-                labelText: 'Duración (días)*',
-                hintText: 'ej., 7, 14, 21, 30',
-                border: OutlineInputBorder(),
-                suffixText: 'días',
+              decoration: InputDecoration(
+                labelText: l10n.durationDaysLabel,
+                hintText: l10n.durationHint,
+                border: const OutlineInputBorder(),
+                suffixText: l10n.daysLabel,
               ),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: targetController,
-              decoration: const InputDecoration(
-                labelText: 'Meta de Días*',
-                hintText: 'ej., 7 días a completar',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.targetDaysLabel,
+                hintText: l10n.targetDaysHint,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Categoría*',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.categoryLabel,
+                border: const OutlineInputBorder(),
               ),
               items: ['General', 'Consistency', 'Health', 'Productivity']
                   .map((category) => DropdownMenuItem(
@@ -533,21 +539,21 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Cancelar'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: () {
             // Validate inputs
             if (titleController.text.trim().isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Por favor ingresa un título')),
+                SnackBar(content: Text(l10n.pleaseEnterTitle)),
               );
               return;
             }
 
             if (descriptionController.text.trim().isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Por favor ingresa una descripción')),
+                SnackBar(content: Text(l10n.pleaseEnterDescription)),
               );
               return;
             }
@@ -555,7 +561,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             final duration = int.tryParse(durationController.text);
             if (duration == null || duration < 1) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Por favor ingresa una duración válida')),
+                SnackBar(content: Text(l10n.pleaseEnterValidDuration)),
               );
               return;
             }
@@ -563,8 +569,8 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             final target = int.tryParse(targetController.text);
             if (target == null || target < 1) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Por favor ingresa una meta válida')),
+                SnackBar(
+                    content: Text(l10n.pleaseEnterValidTarget)),
               );
               return;
             }
@@ -589,7 +595,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('¡Reto "${newChallenge.title}" creado! 🎉'),
+                content: Text(l10n.challengeCreatedMessage(newChallenge.title)),
                 backgroundColor: Colors.green,
               ),
             );
@@ -598,7 +604,7 @@ class _CreateChallengeDialogState extends State<_CreateChallengeDialog> {
             backgroundColor: AppColors.primarys,
             foregroundColor: Colors.white,
           ),
-          child: const Text('Crear'),
+          child: Text(l10n.createButton),
         ),
       ],
     );

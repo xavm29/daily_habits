@@ -9,6 +9,7 @@ import '../services/sound_service.dart';
 import '../services/vibration_service.dart';
 import '../models/user_data.dart';
 import '../styles/styles.dart';
+import '../l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -56,11 +57,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configuración'),
+        title: Text(l10n.settings),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
       ),
@@ -68,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Appearance Section
-          _buildSectionHeader('Apariencia'),
+          _buildSectionHeader(l10n.appearance),
           Card(
             elevation: 2,
             child: Column(
@@ -78,8 +80,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                     color: AppColors.primarys,
                   ),
-                  title: const Text('Modo Oscuro'),
-                  subtitle: const Text('Cambiar entre tema claro y oscuro'),
+                  title: Text(l10n.darkMode),
+                  subtitle: Text(l10n.switchBetweenLightAndDark),
                   value: themeProvider.isDarkMode,
                   onChanged: (value) {
                     themeProvider.toggleTheme();
@@ -90,8 +92,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.view_list, color: AppColors.primarys),
-                  title: const Text('Mostrar Hábitos Completados'),
-                  subtitle: const Text('Mostrar hábitos completados en la lista'),
+                  title: Text(l10n.showCompletedHabits),
+                  subtitle: Text(l10n.displayCompletedHabitsInList),
                   value: _showCompletedHabits,
                   onChanged: (value) {
                     setState(() {
@@ -104,8 +106,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.bar_chart, color: AppColors.primarys),
-                  title: const Text('Mostrar Barras de Progreso'),
-                  subtitle: const Text('Mostrar indicadores de progreso'),
+                  title: Text(l10n.showProgressBars),
+                  subtitle: Text(l10n.displayProgressIndicators),
                   value: _showProgressBar,
                   onChanged: (value) {
                     setState(() {
@@ -121,15 +123,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Feedback Section
-          _buildSectionHeader('Retroalimentación'),
+          _buildSectionHeader(l10n.feedback),
           Card(
             elevation: 2,
             child: Column(
               children: [
                 SwitchListTile(
                   secondary: const Icon(Icons.volume_up, color: AppColors.primarys),
-                  title: const Text('Efectos de Sonido'),
-                  subtitle: const Text('Reproducir sonidos al completar hábitos'),
+                  title: Text(l10n.soundEffects),
+                  subtitle: Text(l10n.playSoundsWhenCompletingHabits),
                   value: _enableSound,
                   onChanged: (value) async {
                     setState(() {
@@ -142,8 +144,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.vibration, color: AppColors.primarys),
-                  title: const Text('Vibración'),
-                  subtitle: const Text('Vibrar al completar hábitos'),
+                  title: Text(l10n.vibration),
+                  subtitle: Text(l10n.vibrateOnHabitCompletion),
                   value: _enableVibration,
                   onChanged: (value) async {
                     setState(() {
@@ -159,22 +161,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Calendar Section
-          _buildSectionHeader('Calendario'),
+          _buildSectionHeader(l10n.calendar),
           Card(
             elevation: 2,
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.calendar_today, color: AppColors.primarys),
-                  title: const Text('La Semana Comienza en'),
-                  subtitle: Text(_weekStartDay == 1 ? 'Lunes' : 'Domingo'),
+                  title: Text(l10n.weekStartsOn),
+                  subtitle: Text(_weekStartDay == 1 ? l10n.monday : l10n.sunday),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => _showWeekStartDialog(),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.date_range, color: AppColors.primarys),
-                  title: const Text('Formato de Fecha'),
+                  title: Text(l10n.dateFormat),
                   subtitle: Text(_dateFormat),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => _showDateFormatDialog(),
@@ -185,13 +187,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Data & Privacy
-          _buildSectionHeader('Datos y Privacidad'),
+          _buildSectionHeader(l10n.dataAndPrivacy),
           Card(
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text('Borrar Todos los Datos', style: TextStyle(color: Colors.red)),
-              subtitle: const Text('Esta acción no se puede deshacer'),
+              title: Text(l10n.clearAllData, style: const TextStyle(color: Colors.red)),
+              subtitle: Text(l10n.thisCannotBeUndone),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () => _showClearDataDialog(),
             ),
@@ -216,15 +218,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showWeekStartDialog() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('La Semana Comienza en'),
+        title: Text(l10n.weekStartsOn),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<int>(
-              title: const Text('Domingo'),
+              title: Text(l10n.sunday),
               value: 0,
               groupValue: _weekStartDay,
               onChanged: (value) {
@@ -236,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             RadioListTile<int>(
-              title: const Text('Lunes'),
+              title: Text(l10n.monday),
               value: 1,
               groupValue: _weekStartDay,
               onChanged: (value) {
@@ -254,10 +257,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showDateFormatDialog() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Formato de Fecha'),
+        title: Text(l10n.dateFormat),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -286,17 +290,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showClearDataDialog() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('¿Borrar Todos los Datos?'),
-        content: const Text(
-          'Esto eliminará todos tus hábitos, progreso y configuraciones. Esta acción no se puede deshacer.',
-        ),
+        title: Text(l10n.clearAllDataQuestion),
+        content: Text(l10n.thisWillDeleteAllYourData),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -345,9 +348,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // Show success message
                 if (mounted) {
+                  final l10n = AppLocalizations.of(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Datos borrados exitosamente'),
+                    SnackBar(
+                      content: Text(l10n.dataClearedSuccessfully),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -358,9 +362,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // Show error message
                 if (mounted) {
+                  final l10n = AppLocalizations.of(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error al borrar datos: $e'),
+                      content: Text('${l10n.errorClearingData}: $e'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -368,7 +373,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Borrar Todo'),
+            child: Text(l10n.clearAll),
           ),
         ],
       ),

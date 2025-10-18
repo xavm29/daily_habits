@@ -144,13 +144,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
 
       // Show success message with coins
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
               const Icon(Icons.check_circle, color: Colors.white),
               const SizedBox(width: 8),
-              Text('Great job! +$coinsEarned coins 🎉'),
+              Text(l10n.greatJobCoins(coinsEarned)),
             ],
           ),
           backgroundColor: Colors.green,
@@ -204,13 +205,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           }
 
           // Show success message with achieved value and coins
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('Completed: $value ${goals[key]!.unit ?? ""}! +$coinsEarned coins 🎉'),
+                  Text(l10n.completedWithCoins(value.toString(), goals[key]!.unit ?? "", coinsEarned)),
                 ],
               ),
               backgroundColor: Colors.green,

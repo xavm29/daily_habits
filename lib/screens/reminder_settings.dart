@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/smart_reminder_service.dart';
 import '../styles/styles.dart';
+import '../l10n/app_localizations.dart';
 
 class ReminderSettingsScreen extends StatefulWidget {
   const ReminderSettingsScreen({Key? key}) : super(key: key);
@@ -48,9 +49,10 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
       );
 
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Reminder time updated!'),
+        SnackBar(
+          content: Text(l10n.reminderTimeUpdated),
           backgroundColor: Colors.green,
         ),
       );
@@ -59,9 +61,10 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reminder Settings'),
+        title: Text(l10n.reminderSettings),
         backgroundColor: AppColors.primarys,
         foregroundColor: Colors.white,
       ),
@@ -77,13 +80,13 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    children: const [
-                      Icon(Icons.notifications_active, color: AppColors.primarys, size: 32),
-                      SizedBox(width: 12),
+                    children: [
+                      const Icon(Icons.notifications_active, color: AppColors.primarys, size: 32),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Smart Reminders',
-                          style: TextStyle(
+                          l10n.smartReminders,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -93,7 +96,7 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Let us remind you at the best time based on your routine',
+                    l10n.letUsRemindYou,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
@@ -107,7 +110,7 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
             elevation: 2,
             child: ListTile(
               leading: const Icon(Icons.access_time, color: AppColors.primarys),
-              title: const Text('Default Reminder Time'),
+              title: Text(l10n.defaultReminderTime),
               subtitle: Text(
                 '${_selectedHour.toString().padLeft(2, '0')}:${_selectedMinute.toString().padLeft(2, '0')}',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -123,8 +126,8 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
             elevation: 2,
             child: SwitchListTile(
               secondary: const Icon(Icons.psychology, color: AppColors.primarys),
-              title: const Text('Smart Reminders'),
-              subtitle: const Text('Learn from your routine and remind you at the best time'),
+              title: Text(l10n.smartReminders),
+              subtitle: Text(l10n.smartRemindersDescription),
               value: _smartReminders,
               onChanged: (value) {
                 setState(() {
@@ -141,8 +144,8 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
             elevation: 2,
             child: SwitchListTile(
               secondary: const Icon(Icons.local_fire_department, color: AppColors.primarys),
-              title: const Text('Streak Alerts'),
-              subtitle: const Text('Get motivated when you\'re on a streak'),
+              title: Text(l10n.streakAlerts),
+              subtitle: Text(l10n.getMotivatedOnStreak),
               value: _streakReminders,
               onChanged: (value) {
                 setState(() {
@@ -159,8 +162,8 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
             elevation: 2,
             child: SwitchListTile(
               secondary: const Icon(Icons.pending_actions, color: AppColors.primarys),
-              title: const Text('Evening Reminder'),
-              subtitle: const Text('Remind you of incomplete habits in the evening'),
+              title: Text(l10n.eveningReminder),
+              subtitle: Text(l10n.remindIncompleteHabits),
               value: _incompleteReminders,
               onChanged: (value) {
                 setState(() {
@@ -185,18 +188,18 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          'How Smart Reminders Work',
-                          style: TextStyle(
+                          l10n.howSmartRemindersWork,
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'We analyze when you usually complete your habits and send reminders 30 minutes before that time. The more you use the app, the smarter it gets!',
-                          style: TextStyle(fontSize: 12),
+                          l10n.smartRemindersExplanation,
+                          style: const TextStyle(fontSize: 12),
                         ),
                       ],
                     ),
