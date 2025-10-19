@@ -6,7 +6,7 @@ class Reward {
   late String title;
   late String description;
   late int cost; // Cost in coins
-  late IconData icon;
+  late int iconCodePoint;
   late Color color;
   late bool isRedeemed;
   late DateTime? redeemedAt;
@@ -15,22 +15,17 @@ class Reward {
     required this.title,
     required this.description,
     required this.cost,
-    required this.icon,
+    required IconData icon,
     required this.color,
     this.isRedeemed = false,
     this.redeemedAt,
-  });
+  }) : iconCodePoint = icon.codePoint;
 
   Reward.fromJson(Map<String, dynamic> json) {
     title = json['title'] ?? '';
     description = json['description'] ?? '';
     cost = json['cost'] ?? 0;
-    final codePoint = json['iconCodePoint'];
-    if (codePoint is int) {
-      icon = IconData(codePoint, fontFamily: 'MaterialIcons');
-    } else {
-      icon = const IconData(0xe22e, fontFamily: 'MaterialIcons'); // Default icon
-    }
+    iconCodePoint = json['iconCodePoint'] ?? 0xe22e; // Default icon codepoint
     final colorVal = json['colorValue'];
     if (colorVal is int) {
       color = Color(colorVal);
@@ -48,7 +43,7 @@ class Reward {
       'title': title,
       'description': description,
       'cost': cost,
-      'iconCodePoint': icon.codePoint,
+      'iconCodePoint': iconCodePoint,
       'colorValue': color.value,
       'isRedeemed': isRedeemed,
       'redeemedAt': redeemedAt,

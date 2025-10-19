@@ -16,7 +16,10 @@
       "Bash(firebase deploy --only firestore:rules)",
       "Bash(firebase projects:list)",
       "Bash(firebase use daily-habits-32eac)",
-      "Bash(clip)"
+      "Bash(clip)",
+      "Bash(git stash show -p stash@{0} -- lib/models/reward_model.dart lib/screens/rewards.dart)",
+      "Bash(git apply)",
+      "Bash(git stash show -p stash@{0})"
     ],
     "deny": [],
     "ask": []
