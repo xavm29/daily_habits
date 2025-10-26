@@ -66,8 +66,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
     );
 
-    // Initialize notification service
-    NotificationService().initialize();
+    // Initialize notification service (non-blocking)
+    NotificationService().initialize().catchError((error) {
+      print('Error initializing notifications: $error');
+    });
 
     stream.listen((event) {
       goals.clear();

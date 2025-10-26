@@ -422,14 +422,20 @@ class _CreateGoalsState extends State<CreateGoals> {
 
                       // Schedule notification for this goal
                       final notificationService = NotificationService();
-                      await notificationService.scheduleDailyNotification(
-                        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-                        title: 'Reminder: ${goal.title}',
-                        body: 'Don\'t forget to complete your habit today!',
-                        hour: hourReminder!.hour,
-                        minute: hourReminder!.minute,
-                        payload: goalTextController.text,
-                      );
+
+                      // Request permission before scheduling
+                      final hasPermission = await notificationService.requestPermission();
+
+                      if (hasPermission == true) {
+                        await notificationService.scheduleDailyNotification(
+                          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                          title: 'Reminder: ${goal.title}',
+                          body: 'Don\'t forget to complete your habit today!',
+                          hour: hourReminder!.hour,
+                          minute: hourReminder!.minute,
+                          payload: goalTextController.text,
+                        );
+                      }
 
                       if (!mounted) return;
 

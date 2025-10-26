@@ -105,14 +105,20 @@ class ChallengeService {
 
     // Schedule notification for this goal
     final notificationService = NotificationService();
-    await notificationService.scheduleDailyNotification(
-      id: docRef.id.hashCode, // Use document ID hash as notification ID
-      title: 'Recordatorio: ${challenge.title}',
-      body: '¡No olvides completar tu reto de hoy!',
-      hour: 9,
-      minute: 0,
-      payload: challenge.title,
-    );
+
+    // Request permission before scheduling
+    final hasPermission = await notificationService.requestPermission();
+
+    if (hasPermission == true) {
+      await notificationService.scheduleDailyNotification(
+        id: docRef.id.hashCode, // Use document ID hash as notification ID
+        title: 'Recordatorio: ${challenge.title}',
+        body: '¡No olvides completar tu reto de hoy!',
+        hour: 9,
+        minute: 0,
+        payload: challenge.title,
+      );
+    }
   }
 
   // Leave a challenge
