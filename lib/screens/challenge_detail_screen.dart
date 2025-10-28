@@ -108,8 +108,10 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
               barRadius: const Radius.circular(10),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              alignment: WrapAlignment.spaceAround,
               children: [
                 _buildStat(
                   icon: Icons.check_circle,

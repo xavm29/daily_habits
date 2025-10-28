@@ -182,28 +182,53 @@ class _StatisticsState extends State<Statistics> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Streak Cards
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: l10n.currentStreak,
-                      value: '$currentStreak',
-                      subtitle: l10n.days,
-                      icon: Icons.local_fire_department,
-                      color: Colors.orange,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      title: l10n.longestStreak,
-                      value: '$longestStreak',
-                      subtitle: l10n.days,
-                      icon: Icons.emoji_events,
-                      color: Colors.amber,
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 400) {
+                    return Column(
+                      children: [
+                        _StatCard(
+                          title: l10n.currentStreak,
+                          value: '$currentStreak',
+                          subtitle: l10n.days,
+                          icon: Icons.local_fire_department,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(height: 16),
+                        _StatCard(
+                          title: l10n.longestStreak,
+                          value: '$longestStreak',
+                          subtitle: l10n.days,
+                          icon: Icons.emoji_events,
+                          color: Colors.amber,
+                        ),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          title: l10n.currentStreak,
+                          value: '$currentStreak',
+                          subtitle: l10n.days,
+                          icon: Icons.local_fire_department,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _StatCard(
+                          title: l10n.longestStreak,
+                          value: '$longestStreak',
+                          subtitle: l10n.days,
+                          icon: Icons.emoji_events,
+                          color: Colors.amber,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
 
@@ -237,9 +262,12 @@ class _StatisticsState extends State<Statistics> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      SizedBox(
-                        height: 200,
-                        child: BarChart(
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final chartHeight = constraints.maxWidth < 400 ? 180.0 : 220.0;
+                          return SizedBox(
+                            height: chartHeight,
+                            child: BarChart(
                           BarChartData(
                             alignment: BarChartAlignment.spaceAround,
                             maxY: (goals.length.toDouble() * 1.2).clamp(5, double.infinity),
@@ -284,7 +312,9 @@ class _StatisticsState extends State<Statistics> {
                             ),
                             borderData: FlBorderData(show: false),
                           ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -361,34 +391,71 @@ class _StatisticsState extends State<Statistics> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () => _exportToCSV(),
-                              icon: const Icon(Icons.table_chart),
-                              label: Text(l10n.exportCSV),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          if (constraints.maxWidth < 400) {
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () => _exportToCSV(),
+                                    icon: const Icon(Icons.table_chart),
+                                    label: Text(l10n.exportCSV),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () => _exportToPDF(),
+                                    icon: const Icon(Icons.picture_as_pdf),
+                                    label: Text(l10n.exportPDF),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _exportToCSV(),
+                                  icon: const Icon(Icons.table_chart),
+                                  label: Text(l10n.exportCSV),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () => _exportToPDF(),
-                              icon: const Icon(Icons.picture_as_pdf),
-                              label: Text(l10n.exportPDF),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _exportToPDF(),
+                                  icon: const Icon(Icons.picture_as_pdf),
+                                  label: Text(l10n.exportPDF),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),

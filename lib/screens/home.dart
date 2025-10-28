@@ -423,6 +423,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final responsivePadding = screenWidth * 0.02;
 
     return Scaffold(
       appBar: AppBar(

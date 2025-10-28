@@ -86,7 +86,11 @@ class _CreateGoalsState extends State<CreateGoals> {
             children: [
               Container(
                   width: double.infinity,
-                  height: 320,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  constraints: const BoxConstraints(
+                    minHeight: 250,
+                    maxHeight: 400,
+                  ),
                   decoration: const BoxDecoration(
                       image: DecorationImage(
                           image:
@@ -135,8 +139,10 @@ class _CreateGoalsState extends State<CreateGoals> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.spaceAround,
                   children: [
                     ElevatedButton(
                         onPressed: () {
@@ -214,8 +220,10 @@ class _CreateGoalsState extends State<CreateGoals> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.spaceAround,
                   children: [
                     ElevatedButton(
                         onPressed: () {

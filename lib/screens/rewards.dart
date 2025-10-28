@@ -147,8 +147,8 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
 
         return GridView.builder(
           padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 200,
             childAspectRatio: 0.75,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,

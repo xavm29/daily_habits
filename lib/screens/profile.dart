@@ -147,9 +147,10 @@ class _ProfileState extends State<Profile> {
                     endIndent: 10,
                     color: Colors.black,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    alignment: WrapAlignment.spaceEvenly,
                     children: [
                       CircularPercentIndicator(
                         radius: 20.0,

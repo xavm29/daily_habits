@@ -98,20 +98,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildImage(String assetName) {
     return Padding(
       padding: const EdgeInsets.all(32),
-      child: Container(
-        width: 200,
-        height: 200,
-        decoration: BoxDecoration(
-          color: AppColors.primarys,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Image.asset(
-          assetName,
-          width: 160,
-          height: 160,
-          fit: BoxFit.contain,
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final size = (constraints.maxWidth * 0.5).clamp(150.0, 250.0);
+          return Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: AppColors.primarys,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Image.asset(
+              assetName,
+              fit: BoxFit.contain,
+            ),
+          );
+        },
       ),
     );
   }
