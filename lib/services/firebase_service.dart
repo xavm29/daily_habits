@@ -24,8 +24,17 @@ class FirebaseService {
   final _db = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> get goalsStream =>
-      _db.collection('users').doc(user?.uid).collection('goals').snapshots();
+  // Check if user is authenticated
+  bool get isAuthenticated => user != null;
+
+  // Return empty stream if not authenticated to prevent permission errors
+  Stream<QuerySnapshot<Map<String, dynamic>>> get goalsStream {
+    if (!isAuthenticated) {
+      // Return empty stream for unauthenticated users
+      return Stream.empty();
+    }
+    return _db.collection('users').doc(user!.uid).collection('goals').snapshots();
+  }
 
   // update name
   Future<void> updateDisplayName(String nameEntered) async {
@@ -34,13 +43,15 @@ class FirebaseService {
 
   //Upload profile image
   Future<void> updatePhoto(XFile image) async {
+    if (!isAuthenticated) return;
+
     TaskSnapshot taskSnapshot = await _storage
-        .ref("users/${user?.uid}/profile")
+        .ref("users/${user!.uid}/profile")
         .putFile(File(image.path));
     var url = await taskSnapshot.ref.getDownloadURL();
     user?.updatePhotoURL(url);
     UserModel userModel = UserModel(url);
-    _db.collection('users').doc(user?.uid).set(userModel.toJson());
+    _db.collection('users').doc(user!.uid).set(userModel.toJson());
   }
 
   Future<void> signOut() async {
@@ -61,15 +72,19 @@ class FirebaseService {
   }
 
   Future<List<Goal>> getGoals() async {
-    await _db.collection('users').doc(user?.uid).collection('goals').get();
+    if (!isAuthenticated) return [];
+
+    await _db.collection('users').doc(user!.uid).collection('goals').get();
     return [];
   }
 
   Future<List<CompletedTask>> getCompletedTasks() async {
+    if (!isAuthenticated) return [];
+
     List<CompletedTask> completedTasks = [];
     QuerySnapshot<Map<String, dynamic>> data = await _db
         .collection('users')
-        .doc(user?.uid)
+        .doc(user!.uid)
         .collection('completedGoals')
         .get();
     if (data.docs.isNotEmpty) {
@@ -81,26 +96,32 @@ class FirebaseService {
   }
 
   Future<void> saveGoal(Goal goal) async {
+    if (!isAuthenticated) return;
+
     await _db
         .collection('users')
-        .doc(user?.uid)
+        .doc(user!.uid)
         .collection('goals')
         .add(goal.toJson());
   }
 
   Future<void> updateGoal(String id, Goal goal) async {
+    if (!isAuthenticated) return;
+
     await _db
         .collection('users')
-        .doc(user?.uid)
+        .doc(user!.uid)
         .collection('goals')
         .doc(id)
         .update(goal.toJson());
   }
 
   Future<void> saveCompletedGoals(CompletedTask task) async {
+    if (!isAuthenticated) return;
+
     await _db
         .collection('users')
-        .doc(user?.uid)
+        .doc(user!.uid)
         .collection('completedGoals')
         .add(task.toJson());
 
@@ -114,6 +135,8 @@ class FirebaseService {
   }
 
   Future<void> clearAllUserData(String userId) async {
+    if (!isAuthenticated) return;
+
     // Delete all goals
     final goalsSnapshot = await _db
         .collection('users')
@@ -167,7 +190,7 @@ class FirebaseService {
 
   // Delete a specific goal
   Future<void> deleteGoal(String goalId) async {
-    if (user == null) return;
+    if (!isAuthenticated) return;
 
     await _db
         .collection('users')

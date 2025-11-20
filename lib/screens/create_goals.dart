@@ -1,4 +1,5 @@
 import 'package:daily_habits/services/firebase_service.dart';
+import 'package:daily_habits/services/local_storage_service.dart';
 import 'package:daily_habits/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -424,8 +425,17 @@ class _CreateGoalsState extends State<CreateGoals> {
                       // Check if we're editing or creating
                       if (widget.goalId != null) {
                         await FirebaseService.instance.updateGoal(widget.goalId!, goal);
+                        // Also update in local storage for offline users
+                        if (!FirebaseService.instance.isAuthenticated) {
+                          await LocalStorageService.instance.saveGoal(goal);
+                        }
                       } else {
+                        // Save to Firebase (will only save if authenticated)
                         await FirebaseService.instance.saveGoal(goal);
+                        // Also save locally for offline users
+                        if (!FirebaseService.instance.isAuthenticated) {
+                          await LocalStorageService.instance.saveGoal(goal);
+                        }
                       }
 
                       // Schedule notification for this goal

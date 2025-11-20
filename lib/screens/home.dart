@@ -54,7 +54,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     var now = DateTime.now();
     dateSelected = DateTime(now.year, now.month, now.day);
     focusedDay = dateSelected;
-    var stream = FirebaseService.instance.goalsStream;
     userData = Provider.of<UserData>(context, listen: false);
 
     // Initialize confetti controller
@@ -71,15 +70,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       print('Error initializing notifications: $error');
     });
 
-    stream.listen((event) {
-      goals.clear();
-      for (var doc in event.docs) {
-        var goal = Goal.fromJson(doc.data());
-        goal.id = doc.id;
-        goals[doc.id] = goal;
-      }
-      setState(() {});
-    });
+    // Load goals based on authentication status
+    if (FirebaseService.instance.isAuthenticated) {
+      // Authenticated: Use Firestore stream
+      var stream = FirebaseService.instance.goalsStream;
+      stream.listen((event) {
+        goals.clear();
+        for (var doc in event.docs) {
+          var goal = Goal.fromJson(doc.data());
+          goal.id = doc.id;
+          goals[doc.id] = goal;
+        }
+        setState(() {});
+      });
+    } else {
+      // Not authenticated: Load from local storage
+      _loadLocalGoals();
+    }
 
     // Load settings
     _loadSettings();
@@ -89,6 +96,18 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     // Check for review prompt
     _checkReviewPrompt();
+  }
+
+  // Load goals from local storage for offline users
+  void _loadLocalGoals() {
+    final localGoals = LocalStorageService.instance.getLocalGoals();
+    goals.clear();
+    for (var goal in localGoals) {
+      goals[goal.id] = goal;
+    }
+    final localTasks = LocalStorageService.instance.getLocalCompletedTasks();
+    userData.tasks = localTasks;
+    setState(() {});
   }
 
   Future<void> _loadSettings() async {
@@ -167,6 +186,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     var task = CompletedTask(key, dateSelected);
     userData.tasks.add(task);
     await FirebaseService.instance.saveCompletedGoals(task);
+    // Also save locally for offline users
+    if (!FirebaseService.instance.isAuthenticated) {
+      await LocalStorageService.instance.saveCompletedTask(task);
+    }
 
     // Update challenge progress if this habit is part of a challenge
     try {
@@ -244,6 +267,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           );
           userData.tasks.add(task);
           await FirebaseService.instance.saveCompletedGoals(task);
+          // Also save locally for offline users
+          if (!FirebaseService.instance.isAuthenticated) {
+            await LocalStorageService.instance.saveCompletedTask(task);
+          }
 
           // Update challenge progress if this habit is part of a challenge
           try {

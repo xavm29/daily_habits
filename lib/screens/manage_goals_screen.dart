@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../l10n/app_localizations.dart';
 import '../models/goals_model.dart';
 import '../services/firebase_service.dart';
+import '../services/local_storage_service.dart';
 import '../styles/styles.dart';
 import 'create_goals.dart';
 
@@ -24,18 +25,31 @@ class _ManageGoalsScreenState extends State<ManageGoalsScreen> {
   }
 
   void _loadGoals() {
-    final stream = FirebaseService.instance.goalsStream;
-    stream.listen((event) {
+    if (FirebaseService.instance.isAuthenticated) {
+      // Authenticated: Use Firestore stream
+      final stream = FirebaseService.instance.goalsStream;
+      stream.listen((event) {
+        goals.clear();
+        for (var doc in event.docs) {
+          var goal = Goal.fromJson(doc.data());
+          goal.id = doc.id;
+          goals[doc.id] = goal;
+        }
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    } else {
+      // Not authenticated: Load from local storage
+      final localGoals = LocalStorageService.instance.getLocalGoals();
       goals.clear();
-      for (var doc in event.docs) {
-        var goal = Goal.fromJson(doc.data());
-        goal.id = doc.id;
-        goals[doc.id] = goal;
+      for (var goal in localGoals) {
+        goals[goal.id] = goal;
       }
       if (mounted) {
         setState(() {});
       }
-    });
+    }
   }
 
   @override
@@ -330,6 +344,12 @@ class _ManageGoalsScreenState extends State<ManageGoalsScreen> {
     if (confirmed == true) {
       try {
         await FirebaseService.instance.deleteGoal(goalId);
+        // Also delete from local storage for offline users
+        if (!FirebaseService.instance.isAuthenticated) {
+          await LocalStorageService.instance.deleteGoal(goalId);
+          // Reload goals from local storage
+          _loadGoals();
+        }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

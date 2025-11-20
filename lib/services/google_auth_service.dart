@@ -6,7 +6,10 @@ class GoogleAuthService {
   GoogleAuthService._internal();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Web client ID from Firebase Console
+    serverClientId: '962159140975-o6kk07c5sim8uih5jh855smb976b9lk3.apps.googleusercontent.com',
+  );
 
   Future<UserCredential?> signInWithGoogle() async {
     try {

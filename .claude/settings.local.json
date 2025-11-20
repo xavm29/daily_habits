@@ -19,7 +19,8 @@
       "Bash(clip)",
       "Bash(git stash show -p stash@{0} -- lib/models/reward_model.dart lib/screens/rewards.dart)",
       "Bash(git apply)",
-      "Bash(git stash show -p stash@{0})"
+      "Bash(git stash show -p stash@{0})",
+      "Bash(gradlew signingReport:*)"
     ],
     "deny": [],
     "ask": []
