@@ -38,6 +38,9 @@ class Reward {
         : null;
   }
 
+  // Getter to retrieve IconData from stored code point
+  IconData get icon => IconData(iconCodePoint, fontFamily: 'MaterialIcons');
+
   Map<String, dynamic> toJson() {
     return {
       'title': title,
