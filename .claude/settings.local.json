@@ -23,7 +23,9 @@
       "Bash(gradlew signingReport:*)",
       "Bash(./gradlew signingReport:*)",
       "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -list -v -keystore C:Usersxmora2.androiddebug.keystore -alias androiddebugkey -storepass android -keypass android)",
-      "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android)"
+      "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
