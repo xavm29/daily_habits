@@ -191,7 +191,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  reward.icon,
+                  IconData(reward.iconCodePoint, fontFamily: 'MaterialIcons'),
                   size: 40,
                   color: reward.color,
                 ),
@@ -303,7 +303,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: reward.color.withOpacity(0.2),
-                  child: Icon(reward.icon, color: reward.color),
+                  child: Icon(IconData(reward.iconCodePoint, fontFamily: 'MaterialIcons'), color: reward.color),
                 ),
                 title: Text(reward.title),
                 subtitle: Text(
@@ -349,7 +349,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(reward.icon, size: 64, color: reward.color),
+            Icon(IconData(reward.iconCodePoint, fontFamily: 'MaterialIcons'), size: 64, color: reward.color),
             const SizedBox(height: 16),
             Text(reward.description, textAlign: TextAlign.center),
             const SizedBox(height: 16),
