@@ -25,7 +25,9 @@
       "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -list -v -keystore C:Usersxmora2.androiddebug.keystore -alias androiddebugkey -storepass android -keypass android)",
       "Bash(\"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe\" -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android)",
       "Bash(git checkout:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Remove dynamic IconData getter to enable tree-shaking\n\nThis fixes the release build error by removing the non-constant IconData\ngetter in RewardModel. Instead, IconData is created directly from\niconCodePoint where needed, allowing Flutter to properly tree-shake\nunused icons in release builds.\n\nChanges:\n- Removed icon getter from RewardModel\n- Updated rewards.dart to use IconData(reward.iconCodePoint, fontFamily: ''MaterialIcons'')\n- Fixes build error: \"Avoid non-constant invocations of IconData\"\n\n🤖 Generated with Claude Code\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
