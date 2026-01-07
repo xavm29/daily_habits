@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,8 +52,10 @@ class _SplashState extends State<Splash> {
     // Initialize local storage
     await LocalStorageService.instance.initialize();
 
+    // Firebase is already initialized in main.dart, but we keep this for compatibility
+    // if FirebaseService.init does other setup.
     _status = await FirebaseService.init();
-    setState(() {});
+    if (mounted) setState(() {});
 
     // Check if onboarding is complete
     final prefs = await SharedPreferences.getInstance();
@@ -67,7 +70,10 @@ class _SplashState extends State<Splash> {
       return;
     }
 
-    var user = FirebaseService.instance.user;
+    // Wait for authentication state to be determined
+    // This is crucial for Google Sign In persistence
+    User? user = await FirebaseAuth.instance.authStateChanges().first;
+
     if (user == null) {
       // Check if user has local data
       final hasLocalData = await LocalStorageService.instance.hasLocalData();
@@ -94,9 +100,14 @@ class _SplashState extends State<Splash> {
     } else {
       if (!mounted) return;
       var userData = Provider.of<UserData>(context, listen: false);
-      FirebaseService.instance.getCompletedTasks().then((value) {
-        userData.tasks = value;
-      });
+      
+      // Load user data
+      try {
+        final tasks = await FirebaseService.instance.getCompletedTasks();
+        userData.tasks = tasks;
+      } catch (e) {
+        print('Error loading tasks: $e');
+      }
 
       if (!mounted) return;
       Navigator.pushReplacement(
